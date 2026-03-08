@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Eye, EyeOff, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Shield, Users } from "lucide-react";
 
 interface SettingsFormProps {
   householdId: string;
@@ -36,39 +37,41 @@ export function SettingsForm({
   const [apiKey, setApiKey] = useState(settings?.claude_api_key_encrypted ?? "");
   const [showKey, setShowKey] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
 
   const handleSaveApiKey = async () => {
     setSaving(true);
     const supabase = createClient();
 
-    if (settings) {
-      await supabase
-        .from("household_settings")
-        .update({ claude_api_key_encrypted: apiKey.trim() || null })
-        .eq("household_id", householdId);
-    } else {
-      await supabase.from("household_settings").insert({
-        household_id: householdId,
-        claude_api_key_encrypted: apiKey.trim() || null,
-      });
-    }
+    const { error } = settings
+      ? await supabase
+          .from("household_settings")
+          .update({ claude_api_key_encrypted: apiKey.trim() || null })
+          .eq("household_id", householdId)
+      : await supabase.from("household_settings").insert({
+          household_id: householdId,
+          claude_api_key_encrypted: apiKey.trim() || null,
+        });
 
     setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-    router.refresh();
+    if (error) {
+      toast.error("Failed to save API key");
+    } else {
+      toast.success("API key saved");
+      router.refresh();
+    }
   };
 
   return (
     <div className="space-y-8">
       {/* Household */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Household</h2>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="font-medium">{householdName}</p>
-          <p className="text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <Users className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-lg font-semibold">Household</h2>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-5">
+          <p className="text-lg font-semibold">{householdName}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
             {members.length} member{members.length !== 1 ? "s" : ""}
           </p>
         </div>
@@ -77,17 +80,20 @@ export function SettingsForm({
           {members.map((m) => (
             <div
               key={m.user_id}
-              className="flex items-center justify-between rounded-md border border-border px-4 py-3"
+              className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3"
             >
               <div>
                 <p className="text-sm font-medium">
-                  {(m.users as { full_name: string | null })?.full_name ?? (m.users as { email: string })?.email}
+                  {(m.users as { full_name: string | null })?.full_name ??
+                    (m.users as { email: string })?.email}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {(m.users as { email: string })?.email}
                 </p>
               </div>
-              <Badge variant="secondary">{m.role}</Badge>
+              <Badge variant={m.role === "owner" ? "default" : "secondary"}>
+                {m.role}
+              </Badge>
             </div>
           ))}
         </div>
@@ -97,14 +103,15 @@ export function SettingsForm({
 
       {/* Claude API Key */}
       <div className="space-y-4">
-        <div>
+        <div className="flex items-center gap-2">
+          <Shield className="h-5 w-5 text-muted-foreground" />
           <h2 className="text-lg font-semibold">Claude API Key</h2>
-          <p className="text-sm text-muted-foreground">
-            Required for AI recipe import (URL, video, image). Your key is
-            stored in the database and used server-side only. All household
-            members share this key.
-          </p>
         </div>
+        <p className="text-sm text-muted-foreground">
+          Powers AI recipe import from URLs, videos, and photos. Your key is
+          stored securely and only used server-side. All household members share
+          this key.
+        </p>
 
         <div className="space-y-2">
           <Label htmlFor="api-key">API Key</Label>
@@ -121,7 +128,8 @@ export function SettingsForm({
               <button
                 type="button"
                 onClick={() => setShowKey(!showKey)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm p-0.5 text-muted-foreground transition-colors hover:text-foreground"
+                aria-label={showKey ? "Hide API key" : "Show API key"}
               >
                 {showKey ? (
                   <EyeOff className="h-4 w-4" />
@@ -130,11 +138,8 @@ export function SettingsForm({
                 )}
               </button>
             </div>
-            <Button
-              onClick={handleSaveApiKey}
-              disabled={saving || !isOwner}
-            >
-              {saved ? "Saved!" : saving ? "Saving..." : "Save"}
+            <Button onClick={handleSaveApiKey} disabled={saving || !isOwner}>
+              {saving ? "Saving..." : "Save"}
             </Button>
           </div>
           {!isOwner && (

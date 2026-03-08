@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -76,7 +77,10 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
     });
 
     setLoading(false);
-    if (!error) {
+    if (error) {
+      toast.error("Failed to save recipe");
+    } else {
+      toast.success("Recipe saved!");
       router.refresh();
       onSuccess();
     }

@@ -3,9 +3,10 @@
 import { useState } from "react";
 import type { Recipe } from "@/types";
 import { RecipeCard } from "./recipe-card";
+import { AddRecipeButton } from "./add-recipe-button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search } from "lucide-react";
+import { Search, UtensilsCrossed, X } from "lucide-react";
 
 interface RecipeListProps {
   recipes: Recipe[];
@@ -33,11 +34,18 @@ export function RecipeList({ recipes }: RecipeListProps) {
 
   if (recipes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-16 text-center">
-        <p className="text-lg font-medium">No recipes yet</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Add your first recipe manually, paste a URL, or drop a TikTok link.
+      <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 px-6 py-20 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+          <UtensilsCrossed className="h-7 w-7 text-primary" />
+        </div>
+        <h3 className="text-lg font-semibold">Your recipe vault is empty</h3>
+        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+          Paste a TikTok link, drop in a recipe URL, snap a photo, or type one
+          from memory. Your AI-powered vault starts here.
         </p>
+        <div className="mt-6">
+          <AddRecipeButton />
+        </div>
       </div>
     );
   }
@@ -58,6 +66,16 @@ export function RecipeList({ recipes }: RecipeListProps) {
 
       {allTags.length > 0 && (
         <div className="flex flex-wrap gap-2">
+          {activeTag && (
+            <Badge
+              variant="secondary"
+              className="cursor-pointer gap-1"
+              onClick={() => setActiveTag(null)}
+            >
+              Clear
+              <X className="h-3 w-3" />
+            </Badge>
+          )}
           {allTags.map((tag) => (
             <Badge
               key={tag}
@@ -78,9 +96,18 @@ export function RecipeList({ recipes }: RecipeListProps) {
       </div>
 
       {filtered.length === 0 && recipes.length > 0 && (
-        <p className="py-8 text-center text-sm text-muted-foreground">
-          No recipes match your search.
-        </p>
+        <div className="py-12 text-center">
+          <p className="text-muted-foreground">No recipes match your search.</p>
+          <button
+            onClick={() => {
+              setSearch("");
+              setActiveTag(null);
+            }}
+            className="mt-2 text-sm text-primary hover:underline"
+          >
+            Clear filters
+          </button>
+        </div>
       )}
     </div>
   );
