@@ -30,38 +30,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Already in a household" }, { status: 400 });
   }
 
-  // Create household
-  const { data: household, error: hError } = await supabase
-    .from("households")
-    .insert({ name })
-    .select()
-    .single();
+  // Create household + membership + settings atomically via RPC
+  const { data: householdId, error: rpcError } = await supabase
+    .rpc("create_household_for_user", { household_name: name });
 
-  if (hError) {
-    console.error("Household create error:", hError);
-    return NextResponse.json({ error: hError.message }, { status: 500 });
+  if (rpcError) {
+    console.error("Household create RPC error:", rpcError);
+    return NextResponse.json({ error: rpcError.message }, { status: 500 });
   }
 
-  // Add user as owner
-  const { error: mError } = await supabase
-    .from("household_members")
-    .insert({
-      household_id: household.id,
-      user_id: user.id,
-      role: "owner",
-    });
-
-  if (mError) {
-    console.error("Membership create error:", mError);
-    // Clean up the orphaned household
-    await supabase.from("households").delete().eq("id", household.id);
-    return NextResponse.json({ error: mError.message }, { status: 500 });
-  }
-
-  // Create default settings
-  await supabase
-    .from("household_settings")
-    .insert({ household_id: household.id });
-
-  return NextResponse.json({ household });
+  return NextResponse.json({ household: { id: householdId, name } });
 }
