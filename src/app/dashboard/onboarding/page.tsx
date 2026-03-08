@@ -65,6 +65,12 @@ export default function OnboardingPage() {
       return;
     }
 
+    // Debug: verify session
+    const { data: sessionData } = await supabase.auth.getSession();
+    console.log("Session:", sessionData.session ? "exists" : "missing");
+    console.log("User ID:", user.id);
+    console.log("Access token:", sessionData.session?.access_token ? "present" : "missing");
+
     // Step 1: Create household
     const { data: household, error: hError } = await supabase
       .from("households")
@@ -76,6 +82,7 @@ export default function OnboardingPage() {
       setLoading(false);
       toast.error(`Could not create household: ${hError?.message ?? "Unknown error"}`);
       console.error("Household creation error:", hError);
+      console.error("Session at time of error:", sessionData.session ? "valid" : "null");
       return;
     }
 
