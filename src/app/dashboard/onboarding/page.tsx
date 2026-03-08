@@ -16,7 +16,6 @@ export default function OnboardingPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const router = useRouter();
 
-  // Check auth on mount
   useEffect(() => {
     const check = async () => {
       const supabase = createClient();
@@ -31,7 +30,6 @@ export default function OnboardingPage() {
 
       setUserEmail(user.email ?? null);
 
-      // Check if already has a household
       const { data: membership } = await supabase
         .from("household_members")
         .select("household_id")
@@ -54,65 +52,28 @@ export default function OnboardingPage() {
     if (!name.trim()) return;
 
     setLoading(true);
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
 
-    if (!user) {
-      toast.error("You need to be signed in");
-      router.push("/");
-      return;
-    }
-
-    // Debug: verify session
-    const { data: sessionData } = await supabase.auth.getSession();
-    console.log("Session:", sessionData.session ? "exists" : "missing");
-    console.log("User ID:", user.id);
-    console.log("Access token:", sessionData.session?.access_token ? "present" : "missing");
-
-    // Step 1: Create household
-    const { data: household, error: hError } = await supabase
-      .from("households")
-      .insert({ name: name.trim() })
-      .select()
-      .single();
-
-    if (hError || !household) {
-      setLoading(false);
-      toast.error(`Could not create household: ${hError?.message ?? "Unknown error"}`);
-      console.error("Household creation error:", hError);
-      console.error("Session at time of error:", sessionData.session ? "valid" : "null");
-      return;
-    }
-
-    // Step 2: Add self as owner
-    const { error: mError } = await supabase
-      .from("household_members")
-      .insert({
-        household_id: household.id,
-        user_id: user.id,
-        role: "owner",
+    try {
+      const res = await fetch("/api/household/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim() }),
       });
 
-    if (mError) {
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Could not create household");
+        setLoading(false);
+        return;
+      }
+
+      toast.success("Household created!");
+      router.push("/dashboard");
+    } catch {
+      toast.error("Something went wrong. Please try again.");
       setLoading(false);
-      toast.error(`Could not join household: ${mError.message}`);
-      console.error("Membership creation error:", mError);
-      return;
     }
-
-    // Step 3: Create settings
-    const { error: sError } = await supabase
-      .from("household_settings")
-      .insert({ household_id: household.id });
-
-    if (sError) {
-      console.error("Settings creation error (non-blocking):", sError);
-    }
-
-    toast.success("Household created!");
-    router.push("/dashboard");
   };
 
   const handleSignOut = async () => {
