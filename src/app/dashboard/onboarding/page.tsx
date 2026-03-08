@@ -1,18 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChefHat, ArrowRight } from "lucide-react";
+import { ChefHat, ArrowRight, Loader2 } from "lucide-react";
 
 export default function OnboardingPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const router = useRouter();
+
+  // Check auth on mount
+  useEffect(() => {
+    const check = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/");
+        return;
+      }
+
+      setUserEmail(user.email ?? null);
+
+      // Check if already has a household
+      const { data: membership } = await supabase
+        .from("household_members")
+        .select("household_id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .single();
+
+      if (membership) {
+        router.push("/dashboard");
+        return;
+      }
+
+      setChecking(false);
+    };
+    check();
+  }, [router]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +65,7 @@ export default function OnboardingPage() {
       return;
     }
 
+    // Step 1: Create household
     const { data: household, error: hError } = await supabase
       .from("households")
       .insert({ name: name.trim() })
@@ -38,10 +74,12 @@ export default function OnboardingPage() {
 
     if (hError || !household) {
       setLoading(false);
-      toast.error("Could not create household. Please try again.");
+      toast.error(`Could not create household: ${hError?.message ?? "Unknown error"}`);
+      console.error("Household creation error:", hError);
       return;
     }
 
+    // Step 2: Add self as owner
     const { error: mError } = await supabase
       .from("household_members")
       .insert({
@@ -52,13 +90,19 @@ export default function OnboardingPage() {
 
     if (mError) {
       setLoading(false);
-      toast.error("Could not join household. Please try again.");
+      toast.error(`Could not join household: ${mError.message}`);
+      console.error("Membership creation error:", mError);
       return;
     }
 
-    await supabase.from("household_settings").insert({
-      household_id: household.id,
-    });
+    // Step 3: Create settings
+    const { error: sError } = await supabase
+      .from("household_settings")
+      .insert({ household_id: household.id });
+
+    if (sError) {
+      console.error("Settings creation error (non-blocking):", sError);
+    }
 
     toast.success("Household created!");
     router.push("/dashboard");
@@ -69,6 +113,14 @@ export default function OnboardingPage() {
     await supabase.auth.signOut();
     router.push("/");
   };
+
+  if (checking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6">
@@ -84,6 +136,11 @@ export default function OnboardingPage() {
             This is your family&apos;s shared space for recipes, meals, and
             lists. You can invite others later.
           </p>
+          {userEmail && (
+            <p className="text-xs text-muted-foreground">
+              Signed in as {userEmail}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -100,7 +157,10 @@ export default function OnboardingPage() {
 
         <Button type="submit" className="w-full" size="lg" disabled={loading}>
           {loading ? (
-            "Creating..."
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating...
+            </>
           ) : (
             <>
               Create household
