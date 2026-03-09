@@ -69,7 +69,7 @@ export default function OnboardingPage() {
       }
 
       toast.success("Household created!");
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch {
       toast.error("Something went wrong. Please try again.");
       setLoading(false);
