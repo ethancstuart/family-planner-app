@@ -19,12 +19,16 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/");
 
-  const { data: membership } = await supabase
+  const { data: membership, error: membershipError } = await supabase
     .from("household_members")
-    .select("household_id, role, households(id, name)")
+    .select("household_id, role")
     .eq("user_id", user.id)
     .limit(1)
     .single();
+
+  if (membershipError) {
+    console.error("Membership query error:", membershipError);
+  }
 
   if (!membership) redirect("/dashboard/onboarding");
 
