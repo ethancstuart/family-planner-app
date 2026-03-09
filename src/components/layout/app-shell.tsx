@@ -17,8 +17,10 @@ import {
   ListTodo,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PageTransition } from "./page-transition";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
@@ -76,14 +78,19 @@ export function AppShell({ user, children }: AppShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                  isActive
-                    ? "bg-primary/10 font-medium text-primary"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
+                className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground"
               >
-                <item.icon className="h-4 w-4" />
-                {item.label}
+                {isActive && (
+                  <motion.div
+                    layoutId="sidebar-indicator"
+                    className="absolute inset-0 rounded-lg bg-primary/10"
+                    transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+                  />
+                )}
+                <item.icon className={`relative h-4 w-4 ${isActive ? "text-primary" : ""}`} />
+                <span className={`relative ${isActive ? "font-medium text-primary" : ""}`}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}
@@ -167,25 +174,31 @@ export function AppShell({ user, children }: AppShellProps) {
             pathname === item.href ||
             (item.href !== "/dashboard" && pathname.startsWith(item.href));
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-1 flex-col items-center gap-1 py-3 text-[10px] font-medium transition-colors ${
-                isActive
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              }`}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.label}
-            </Link>
+            <motion.div key={item.href} whileTap={{ scale: 0.95 }} className="flex-1">
+              <Link
+                href={item.href}
+                className="relative flex flex-col items-center gap-1 py-3 text-[10px] font-medium transition-colors text-muted-foreground"
+              >
+                <item.icon className={`h-5 w-5 ${isActive ? "text-primary" : ""}`} />
+                <span className={isActive ? "text-primary" : ""}>{item.label}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="bottom-indicator"
+                    className="absolute -bottom-0 h-0.5 w-6 rounded-full bg-primary"
+                    transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+                  />
+                )}
+              </Link>
+            </motion.div>
           );
         })}
       </nav>
 
       {/* Main content */}
       <main className="pt-14 md:pt-0 md:pl-60">
-        <div className="mx-auto max-w-5xl p-4 sm:p-6">{children}</div>
+        <div className="mx-auto max-w-5xl p-4 sm:p-6">
+          <PageTransition key={pathname}>{children}</PageTransition>
+        </div>
       </main>
     </div>
   );

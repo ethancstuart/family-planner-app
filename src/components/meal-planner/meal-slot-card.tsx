@@ -7,6 +7,7 @@ import type { MealPlanSlot, Recipe, DayOfWeek, MealType } from "@/types";
 import { createClient } from "@/lib/supabase/client";
 import { X, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface MealSlotCardProps {
   slot: MealPlanSlot;
@@ -17,7 +18,14 @@ interface MealSlotCardProps {
   recipes: Recipe[];
 }
 
-export function MealSlotCard({ slot, label }: MealSlotCardProps) {
+const mealTypeColors: Record<string, string> = {
+  breakfast: "border-l-amber-400",
+  lunch: "border-l-green-400",
+  dinner: "border-l-orange-400",
+  snack: "border-l-purple-400",
+};
+
+export function MealSlotCard({ slot, label, mealType }: MealSlotCardProps) {
   const router = useRouter();
   const [removing, setRemoving] = useState(false);
   const recipe = slot.recipe!;
@@ -47,7 +55,10 @@ export function MealSlotCard({ slot, label }: MealSlotCardProps) {
     <div className="group relative">
       <Link
         href={`/recipes/${recipe.id}`}
-        className="block rounded-lg border border-border bg-card p-2 transition-all hover:border-primary/30"
+        className={cn(
+          "block rounded-lg border border-border border-l-2 bg-card p-2 transition-all hover:border-primary/30 hover:scale-[1.02]",
+          mealTypeColors[mealType]
+        )}
       >
         <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
           {label}

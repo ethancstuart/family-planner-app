@@ -10,6 +10,7 @@ import { ChevronDown, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Celebration } from "@/components/ui/celebration";
 
 interface TodoListPanelProps {
   list: TodoList;
@@ -27,14 +28,19 @@ export function TodoListPanel({
   const router = useRouter();
   const [open, setOpen] = useState(true);
   const [localItems, setLocalItems] = useState(items);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const completedCount = localItems.filter((i) => i.completed).length;
   const totalCount = localItems.length;
 
   const handleToggle = async (itemId: string, completed: boolean) => {
-    setLocalItems((prev) =>
-      prev.map((i) => (i.id === itemId ? { ...i, completed } : i))
-    );
+    setLocalItems((prev) => {
+      const next = prev.map((i) => (i.id === itemId ? { ...i, completed } : i));
+      if (completed && next.length > 0 && next.every((i) => i.completed)) {
+        setShowCelebration(true);
+      }
+      return next;
+    });
 
     const supabase = createClient();
     const { error } = await supabase
@@ -119,6 +125,7 @@ export function TodoListPanel({
 
   return (
     <div className="rounded-xl border border-border bg-card">
+      <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
       <button
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between px-5 py-4"

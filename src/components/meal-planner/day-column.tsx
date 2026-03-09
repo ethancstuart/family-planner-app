@@ -27,8 +27,8 @@ export function DayColumn({
   return (
     <div
       className={cn(
-        "min-w-[160px] flex-shrink-0 rounded-xl border border-border p-3 md:min-w-0",
-        isToday && "border-primary/40 bg-primary/5"
+        "min-w-[160px] flex-shrink-0 rounded-xl border border-border p-3 md:min-w-0 transition-all",
+        isToday && "border-primary/40 bg-gradient-to-b from-primary/8 to-transparent"
       )}
     >
       <div className="mb-3 text-center">

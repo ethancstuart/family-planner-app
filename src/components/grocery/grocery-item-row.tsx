@@ -4,6 +4,7 @@ import type { GroceryItem } from "@/types";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
+import { AnimatedCheckbox } from "@/components/ui/animated-checkbox";
 
 interface GroceryItemRowProps {
   item: GroceryItem;
@@ -37,33 +38,12 @@ export function GroceryItemRow({
         item.checked && "border-transparent"
       )}
     >
-      <button
-        onClick={() => onToggle(item.id, !item.checked)}
-        className={cn(
-          "flex shrink-0 items-center justify-center rounded-md border-2 transition-colors",
-          large ? "h-6 w-6" : "h-5 w-5",
-          item.checked
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-muted-foreground/30 hover:border-primary"
-        )}
-        aria-label={item.checked ? "Uncheck item" : "Check item"}
-      >
-        {item.checked && (
-          <svg
-            className={cn(large ? "h-4 w-4" : "h-3 w-3")}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={3}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-        )}
-      </button>
+      <AnimatedCheckbox
+        checked={item.checked}
+        onToggle={() => onToggle(item.id, !item.checked)}
+        size={large ? "lg" : "md"}
+        label={item.checked ? "Uncheck item" : "Check item"}
+      />
 
       <div className="min-w-0 flex-1">
         <p

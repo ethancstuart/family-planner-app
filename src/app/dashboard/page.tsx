@@ -143,7 +143,7 @@ export default async function DashboardPage() {
 
         {/* Setup checklist — only shows when incomplete */}
         {(!hasApiKey || recipeCount === 0) && (
-          <div className="rounded-xl border border-primary/20 bg-primary/5 p-6">
+          <div className="rounded-xl border border-primary/20 border-l-4 border-l-primary bg-primary/5 p-6">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Sparkles className="h-5 w-5 text-primary" />
               Get started
@@ -188,7 +188,7 @@ export default async function DashboardPage() {
 
           <Link
             href="/recipes"
-            className="group flex items-center gap-4 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-5 transition-all hover:border-primary/50 hover:shadow-sm"
+            className="group flex items-center gap-4 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-5 transition-all hover:border-primary/40 hover:shadow-md"
           >
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10">
               <Plus className="h-5 w-5 text-primary" />
@@ -223,7 +223,7 @@ export default async function DashboardPage() {
           {/* This Week's Meals */}
           <Link
             href="/meal-planner"
-            className="group flex flex-col gap-3 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+            className="group flex flex-col gap-3 rounded-xl border border-border border-l-4 border-l-primary bg-card p-5 transition-all hover:border-primary/30 hover:border-l-primary hover:shadow-sm"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -255,7 +255,7 @@ export default async function DashboardPage() {
           {/* Active Grocery List */}
           <Link
             href={groceryList ? `/grocery/${groceryList.id}` : "/grocery"}
-            className="group flex flex-col gap-3 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+            className="group flex flex-col gap-3 rounded-xl border border-border border-l-4 border-l-teal-500 bg-card p-5 transition-all hover:border-primary/30 hover:border-l-teal-500 hover:shadow-sm"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -292,7 +292,7 @@ export default async function DashboardPage() {
           {/* Pending Tasks */}
           <Link
             href="/todos"
-            className="group flex flex-col gap-3 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+            className="group flex flex-col gap-3 rounded-xl border border-border border-l-4 border-l-amber-500 bg-card p-5 transition-all hover:border-primary/30 hover:border-l-amber-500 hover:shadow-sm"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

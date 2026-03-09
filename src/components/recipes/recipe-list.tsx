@@ -7,6 +7,17 @@ import { AddRecipeButton } from "./add-recipe-button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, UtensilsCrossed, X } from "lucide-react";
+import { motion } from "framer-motion";
+
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.04 } },
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" as const } },
+};
 
 interface RecipeListProps {
   recipes: Recipe[];
@@ -89,11 +100,19 @@ export function RecipeList({ recipes }: RecipeListProps) {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <motion.div
+        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        key={search + activeTag}
+      >
         {filtered.map((recipe) => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
+          <motion.div key={recipe.id} variants={staggerItem}>
+            <RecipeCard recipe={recipe} />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {filtered.length === 0 && recipes.length > 0 && (
         <div className="py-12 text-center">

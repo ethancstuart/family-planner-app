@@ -8,6 +8,7 @@ import { TodoFilters } from "./todo-filters";
 import { EmptyTodos } from "./empty-todos";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface TodoPageClientProps {
   lists: TodoList[];
@@ -90,7 +91,12 @@ export function TodoPageClient({
 
       <TodoFilters active={activeFilter} onChange={setActiveFilter} />
 
-      <div className="space-y-4">
+      <motion.div
+        className="space-y-4"
+        initial="hidden"
+        animate="visible"
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
+      >
         {lists.map((list) => {
           const listItems = filterItems(
             allItems.filter((i) => i.todo_list_id === list.id)
@@ -100,16 +106,23 @@ export function TodoPageClient({
           if (activeFilter !== "all" && listItems.length === 0) return null;
 
           return (
-            <TodoListPanel
+            <motion.div
               key={list.id}
-              list={list}
-              items={listItems}
-              members={members}
-              currentUserId={currentUserId}
-            />
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+              }}
+            >
+              <TodoListPanel
+                list={list}
+                items={listItems}
+                members={members}
+                currentUserId={currentUserId}
+              />
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       <CreateListDialog
         open={dialogOpen}

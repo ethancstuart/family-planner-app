@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { GROCERY_CATEGORIES } from "@/lib/constants";
+import { Celebration } from "@/components/ui/celebration";
 
 interface GroceryListViewProps {
   list: GroceryList;
@@ -67,6 +68,8 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
     };
   }, [list.id]);
 
+  const [showCelebration, setShowCelebration] = useState(false);
+
   const checkedCount = items.filter((i) => i.checked).length;
   const uncheckedItems = items.filter((i) => !i.checked);
   const checkedItems = items.filter((i) => i.checked);
@@ -88,9 +91,14 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
 
   const handleToggle = async (itemId: string, checked: boolean) => {
     // Optimistic update
-    setItems((prev) =>
-      prev.map((item) => (item.id === itemId ? { ...item, checked } : item))
-    );
+    setItems((prev) => {
+      const next = prev.map((item) => (item.id === itemId ? { ...item, checked } : item));
+      // Celebrate when all items are checked
+      if (checked && next.length > 0 && next.every((i) => i.checked)) {
+        setShowCelebration(true);
+      }
+      return next;
+    });
 
     const supabase = createClient();
     const { error } = await supabase
@@ -218,6 +226,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
 
   return (
     <div className="space-y-6">
+      <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link

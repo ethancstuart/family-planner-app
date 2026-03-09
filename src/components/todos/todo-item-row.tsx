@@ -5,6 +5,7 @@ import { AssignMemberPopover } from "./assign-member-popover";
 import { cn } from "@/lib/utils";
 import { X, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import { AnimatedCheckbox } from "@/components/ui/animated-checkbox";
 
 interface TodoItemRowProps {
   item: TodoItem;
@@ -49,32 +50,13 @@ export function TodoItemRow({
       animate={{ opacity: 1, y: 0 }}
       className="group flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/50"
     >
-      <button
-        onClick={() => onToggle(item.id, !item.completed)}
-        className={cn(
-          "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
-          item.completed
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-muted-foreground/30 hover:border-primary"
-        )}
-        aria-label={item.completed ? "Mark incomplete" : "Mark complete"}
-      >
-        {item.completed && (
-          <svg
-            className="h-3 w-3"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={3}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-        )}
-      </button>
+      <AnimatedCheckbox
+        checked={item.completed}
+        onToggle={() => onToggle(item.id, !item.completed)}
+        size="md"
+        className="rounded-full"
+        label={item.completed ? "Mark incomplete" : "Mark complete"}
+      />
 
       <div className="min-w-0 flex-1">
         <p
