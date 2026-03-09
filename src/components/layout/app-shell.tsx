@@ -12,6 +12,9 @@ import {
   LogOut,
   Sun,
   Moon,
+  CalendarDays,
+  ShoppingCart,
+  ListTodo,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -20,6 +23,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/recipes", label: "Recipes", icon: UtensilsCrossed },
+  { href: "/meal-planner", label: "Meals", icon: CalendarDays },
+  { href: "/grocery", label: "Grocery", icon: ShoppingCart },
+  { href: "/todos", label: "To-Do", icon: ListTodo },
+];
+
+const desktopNavItems = [
+  ...navItems,
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -58,7 +68,7 @@ export function AppShell({ user, children }: AppShellProps) {
         </div>
 
         <nav className="flex-1 space-y-1 p-3">
-          {navItems.map((item) => {
+          {desktopNavItems.map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== "/dashboard" && pathname.startsWith(item.href));
@@ -131,6 +141,13 @@ export function AppShell({ user, children }: AppShellProps) {
             <Sun className="h-4 w-4 dark:hidden" />
             <Moon className="hidden h-4 w-4 dark:block" />
           </Button>
+          <Link
+            href="/settings"
+            className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-muted"
+            aria-label="Settings"
+          >
+            <Settings className="h-4 w-4" />
+          </Link>
           <Button
             variant="ghost"
             size="icon"
