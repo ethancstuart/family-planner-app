@@ -31,9 +31,9 @@ export async function updateSession(request: NextRequest) {
 
   // Redirect unauthenticated users to home page (except public routes)
   const publicRoutes = ["/", "/auth/callback"];
-  const isPublicRoute = publicRoutes.some(
-    (route) => request.nextUrl.pathname === route
-  );
+  const isPublicRoute =
+    publicRoutes.some((route) => request.nextUrl.pathname === route) ||
+    request.nextUrl.pathname.startsWith("/invite/");
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();

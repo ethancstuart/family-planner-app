@@ -244,6 +244,10 @@ export default function OnboardingPage() {
               >
                 Sign out
               </button>
+              <p className="text-center text-xs text-muted-foreground">
+                Have an invite link? Ask your household owner to share it with
+                you.
+              </p>
             </motion.div>
           )}
 

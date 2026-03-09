@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Eye, EyeOff, Shield, Users } from "lucide-react";
+import { InviteSection } from "@/components/settings/invite-section";
 
 interface SettingsFormProps {
   householdId: string;
@@ -98,6 +99,13 @@ export function SettingsForm({
           ))}
         </div>
       </div>
+
+      {isOwner && (
+        <>
+          <Separator />
+          <InviteSection />
+        </>
+      )}
 
       <Separator />
 
