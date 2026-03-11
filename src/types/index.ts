@@ -31,7 +31,8 @@ export interface Recipe {
   cook_time_minutes: number | null;
   servings: number | null;
   source_url: string | null;
-  source_type: "manual" | "url" | "video" | "image";
+  source_type: "manual" | "url" | "video" | "image" | "spoonacular";
+  spoonacular_id?: number | null;
   image_url: string | null;
   is_favorite: boolean;
   created_by: string;
@@ -128,6 +129,34 @@ export interface HouseholdInvitation {
   used_by: string | null;
   used_at: string | null;
   created_at: string;
+}
+
+export interface MealPlanTemplate {
+  id: string;
+  household_id: string;
+  name: string;
+  created_by: string;
+  created_at: string;
+}
+
+export interface MealPlanTemplateSlot {
+  id: string;
+  template_id: string;
+  recipe_id: string;
+  day_of_week: DayOfWeek;
+  meal_type: MealType;
+  recipe?: Recipe;
+}
+
+export interface SpoonacularSearchResult {
+  id: number;
+  title: string;
+  image: string;
+  readyInMinutes: number;
+  servings: number;
+  cuisines: string[];
+  diets: string[];
+  dishTypes: string[];
 }
 
 export interface HouseholdSettings {

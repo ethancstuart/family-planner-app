@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { MealPlanSlot, Recipe, DayOfWeek, MealType } from "@/types";
 import { createClient } from "@/lib/supabase/client";
-import { X, Clock } from "lucide-react";
+import { X, Clock, ArrowLeftRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { AddMealDialog } from "./add-meal-dialog";
 
 interface MealSlotCardProps {
   slot: MealPlanSlot;
@@ -16,6 +17,7 @@ interface MealSlotCardProps {
   dayOfWeek: DayOfWeek;
   mealType: MealType;
   recipes: Recipe[];
+  isDragging?: boolean;
 }
 
 const mealTypeColors: Record<string, string> = {
@@ -25,9 +27,10 @@ const mealTypeColors: Record<string, string> = {
   snack: "border-l-purple-400",
 };
 
-export function MealSlotCard({ slot, label, mealType }: MealSlotCardProps) {
+export function MealSlotCard({ slot, label, mealPlanId, dayOfWeek, mealType, recipes, isDragging }: MealSlotCardProps) {
   const router = useRouter();
   const [removing, setRemoving] = useState(false);
+  const [swapOpen, setSwapOpen] = useState(false);
   const recipe = slot.recipe!;
   const totalTime =
     (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
@@ -52,7 +55,7 @@ export function MealSlotCard({ slot, label, mealType }: MealSlotCardProps) {
   };
 
   return (
-    <div className="group relative">
+    <div className={cn("group relative", isDragging && "shadow-lg")}>
       <Link
         href={`/recipes/${recipe.id}`}
         className={cn(
@@ -74,6 +77,17 @@ export function MealSlotCard({ slot, label, mealType }: MealSlotCardProps) {
         )}
       </Link>
       <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setSwapOpen(true);
+        }}
+        className="absolute -left-1.5 -top-1.5 hidden h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-opacity group-hover:flex"
+        aria-label="Swap meal"
+      >
+        <ArrowLeftRight className="h-3 w-3" />
+      </button>
+      <button
         onClick={handleRemove}
         disabled={removing}
         className="absolute -right-1.5 -top-1.5 hidden h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-sm transition-opacity group-hover:flex"
@@ -81,6 +95,16 @@ export function MealSlotCard({ slot, label, mealType }: MealSlotCardProps) {
       >
         <X className="h-3 w-3" />
       </button>
+      <AddMealDialog
+        open={swapOpen}
+        onOpenChange={setSwapOpen}
+        mealPlanId={mealPlanId}
+        dayOfWeek={dayOfWeek}
+        mealType={mealType}
+        recipes={recipes}
+        existingSlotId={slot.id}
+        currentRecipeId={slot.recipe_id}
+      />
     </div>
   );
 }

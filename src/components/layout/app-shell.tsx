@@ -15,6 +15,7 @@ import {
   CalendarDays,
   ShoppingCart,
   ListTodo,
+  Compass,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
@@ -25,6 +26,7 @@ import { PageTransition } from "./page-transition";
 const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/recipes", label: "Recipes", icon: UtensilsCrossed },
+  { href: "/recipes/discover", label: "Discover", icon: Compass },
   { href: "/meal-planner", label: "Meals", icon: CalendarDays },
   { href: "/grocery", label: "Grocery", icon: ShoppingCart },
   { href: "/todos", label: "To-Do", icon: ListTodo },

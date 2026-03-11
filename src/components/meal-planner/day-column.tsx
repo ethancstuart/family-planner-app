@@ -1,6 +1,6 @@
 "use client";
 
-import type { MealPlanSlot, Recipe, DayOfWeek, MealType } from "@/types";
+import type { MealPlanSlot, Recipe, DayOfWeek } from "@/types";
 import { MealSlot } from "./meal-slot";
 import { MEAL_TYPES, MEAL_TYPE_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";

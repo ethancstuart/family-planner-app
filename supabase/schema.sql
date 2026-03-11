@@ -346,3 +346,50 @@ $$;
 create or replace trigger recipes_updated_at
   before update on public.recipes
   for each row execute function public.update_updated_at();
+
+-- ============================================================
+-- PHASE 2 ADDITIONS
+-- ============================================================
+
+-- Extend recipe source_type for Spoonacular imports
+ALTER TABLE public.recipes DROP CONSTRAINT IF EXISTS recipes_source_type_check;
+ALTER TABLE public.recipes ADD CONSTRAINT recipes_source_type_check
+  CHECK (source_type IN ('manual', 'url', 'video', 'image', 'spoonacular'));
+
+-- Track Spoonacular recipe origin (prevent duplicate imports per household)
+ALTER TABLE public.recipes ADD COLUMN IF NOT EXISTS spoonacular_id integer;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_recipes_spoonacular_id
+  ON public.recipes(household_id, spoonacular_id) WHERE spoonacular_id IS NOT NULL;
+
+-- Meal plan templates
+CREATE TABLE public.meal_plan_templates (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  household_id uuid NOT NULL REFERENCES public.households(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  created_by uuid NOT NULL REFERENCES public.users(id),
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE public.meal_plan_template_slots (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  template_id uuid NOT NULL REFERENCES public.meal_plan_templates(id) ON DELETE CASCADE,
+  recipe_id uuid NOT NULL REFERENCES public.recipes(id) ON DELETE CASCADE,
+  day_of_week integer NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
+  meal_type text NOT NULL CHECK (meal_type IN ('breakfast', 'lunch', 'dinner', 'snack'))
+);
+
+CREATE INDEX idx_template_slots_template ON public.meal_plan_template_slots(template_id);
+
+ALTER TABLE public.meal_plan_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.meal_plan_template_slots ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Members can manage meal plan templates"
+  ON public.meal_plan_templates FOR ALL
+  USING (household_id IN (SELECT public.user_household_ids(auth.uid())));
+
+CREATE POLICY "Members can manage template slots"
+  ON public.meal_plan_template_slots FOR ALL
+  USING (template_id IN (
+    SELECT id FROM public.meal_plan_templates
+    WHERE household_id IN (SELECT public.user_household_ids(auth.uid()))
+  ));

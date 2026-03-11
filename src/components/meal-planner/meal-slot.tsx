@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import type { MealPlanSlot, Recipe, DayOfWeek, MealType } from "@/types";
-import { MealSlotCard } from "./meal-slot-card";
+import { DraggableMealCard } from "./draggable-meal-card";
+import { DroppableSlot } from "./droppable-slot";
 import { AddMealDialog } from "./add-meal-dialog";
 import { Plus } from "lucide-react";
 
@@ -24,22 +25,25 @@ export function MealSlot({
   recipes,
 }: MealSlotProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const droppableId = `${dayOfWeek}-${mealType}`;
 
   if (slot?.recipe) {
     return (
-      <MealSlotCard
-        slot={slot}
-        label={label}
-        mealPlanId={mealPlanId}
-        dayOfWeek={dayOfWeek}
-        mealType={mealType}
-        recipes={recipes}
-      />
+      <DroppableSlot id={droppableId}>
+        <DraggableMealCard
+          slot={slot}
+          label={label}
+          mealPlanId={mealPlanId}
+          dayOfWeek={dayOfWeek}
+          mealType={mealType}
+          recipes={recipes}
+        />
+      </DroppableSlot>
     );
   }
 
   return (
-    <>
+    <DroppableSlot id={droppableId}>
       <button
         onClick={() => setDialogOpen(true)}
         className="flex w-full items-center gap-2 rounded-lg border border-dashed border-border p-2 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
@@ -56,6 +60,6 @@ export function MealSlot({
         mealType={mealType}
         recipes={recipes}
       />
-    </>
+    </DroppableSlot>
   );
 }

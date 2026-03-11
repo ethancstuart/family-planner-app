@@ -24,6 +24,8 @@ interface AddMealDialogProps {
   dayOfWeek: DayOfWeek;
   mealType: MealType;
   recipes: Recipe[];
+  existingSlotId?: string;
+  currentRecipeId?: string;
 }
 
 export function AddMealDialog({
@@ -33,7 +35,10 @@ export function AddMealDialog({
   dayOfWeek,
   mealType,
   recipes,
+  existingSlotId,
+  currentRecipeId,
 }: AddMealDialogProps) {
+  const isSwapMode = !!existingSlotId;
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [adding, setAdding] = useState<string | null>(null);
@@ -49,12 +54,17 @@ export function AddMealDialog({
     setAdding(recipe.id);
     const supabase = createClient();
 
-    const { error } = await supabase.from("meal_plan_slots").insert({
-      meal_plan_id: mealPlanId,
-      recipe_id: recipe.id,
-      day_of_week: dayOfWeek,
-      meal_type: mealType,
-    });
+    const { error } = existingSlotId
+      ? await supabase
+          .from("meal_plan_slots")
+          .update({ recipe_id: recipe.id })
+          .eq("id", existingSlotId)
+      : await supabase.from("meal_plan_slots").insert({
+          meal_plan_id: mealPlanId,
+          recipe_id: recipe.id,
+          day_of_week: dayOfWeek,
+          meal_type: mealType,
+        });
 
     if (error) {
       toast.error("Failed to add meal");
@@ -72,7 +82,7 @@ export function AddMealDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            Add {MEAL_TYPE_LABELS[mealType]}
+            {isSwapMode ? "Swap" : "Add"} {MEAL_TYPE_LABELS[mealType]}
           </DialogTitle>
           <DialogDescription>
             {DAYS_OF_WEEK[dayOfWeek]} — pick a recipe from your vault.
@@ -103,17 +113,21 @@ export function AddMealDialog({
                 (recipe.prep_time_minutes ?? 0) +
                 (recipe.cook_time_minutes ?? 0);
               const isAdding = adding === recipe.id;
+              const isCurrent = recipe.id === currentRecipeId;
 
               return (
                 <button
                   key={recipe.id}
                   onClick={() => handleSelect(recipe)}
-                  disabled={isAdding}
+                  disabled={isAdding || isCurrent}
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted disabled:opacity-50"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium leading-snug">
                       {recipe.title}
+                      {isCurrent && (
+                        <span className="ml-2 text-xs text-muted-foreground">(current)</span>
+                      )}
                     </p>
                     <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                       {totalTime > 0 && (

@@ -3,13 +3,14 @@
 import Link from "next/link";
 import type { Recipe } from "@/types";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Clock, Users, Link2, Video, Camera, PenLine } from "lucide-react";
+import { Heart, Clock, Users, Link2, Video, Camera, PenLine, Compass } from "lucide-react";
 
-const sourceIcons = {
+const sourceIcons: Record<string, typeof PenLine> = {
   url: Link2,
   video: Video,
   image: Camera,
   manual: PenLine,
+  spoonacular: Compass,
 };
 
 const gradientColors = [

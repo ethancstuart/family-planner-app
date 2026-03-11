@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Eye, EyeOff, Shield, Users } from "lucide-react";
+import { Eye, EyeOff, Shield, Users, Compass } from "lucide-react";
 import { InviteSection } from "@/components/settings/invite-section";
 
 interface SettingsFormProps {
@@ -17,6 +17,7 @@ interface SettingsFormProps {
   householdName: string;
   settings: {
     claude_api_key_encrypted: string | null;
+    spoonacular_api_key: string | null;
     default_servings: number;
   } | null;
   members: Array<{
@@ -38,6 +39,9 @@ export function SettingsForm({
   const [apiKey, setApiKey] = useState(settings?.claude_api_key_encrypted ?? "");
   const [showKey, setShowKey] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [spoonacularKey, setSpoonacularKey] = useState(settings?.spoonacular_api_key ?? "");
+  const [showSpoonacularKey, setShowSpoonacularKey] = useState(false);
+  const [savingSpoonacular, setSavingSpoonacular] = useState(false);
 
   const handleSaveApiKey = async () => {
     setSaving(true);
@@ -155,6 +159,75 @@ export function SettingsForm({
               Only the household owner can update the API key.
             </p>
           )}
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Spoonacular API Key */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Compass className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-lg font-semibold">Spoonacular API Key</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Powers recipe discovery. Get a free API key at{" "}
+          <a href="https://spoonacular.com/food-api" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+            spoonacular.com
+          </a>.
+        </p>
+
+        <div className="space-y-2">
+          <Label htmlFor="spoonacular-key">API Key</Label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Input
+                id="spoonacular-key"
+                type={showSpoonacularKey ? "text" : "password"}
+                placeholder="Your Spoonacular API key"
+                value={spoonacularKey}
+                onChange={(e) => setSpoonacularKey(e.target.value)}
+                disabled={!isOwner}
+              />
+              <button
+                type="button"
+                onClick={() => setShowSpoonacularKey(!showSpoonacularKey)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm p-0.5 text-muted-foreground transition-colors hover:text-foreground"
+                aria-label={showSpoonacularKey ? "Hide API key" : "Show API key"}
+              >
+                {showSpoonacularKey ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+            <Button
+              onClick={async () => {
+                setSavingSpoonacular(true);
+                const supabase = createClient();
+                const { error } = settings
+                  ? await supabase
+                      .from("household_settings")
+                      .update({ spoonacular_api_key: spoonacularKey.trim() || null })
+                      .eq("household_id", householdId)
+                  : await supabase.from("household_settings").insert({
+                      household_id: householdId,
+                      spoonacular_api_key: spoonacularKey.trim() || null,
+                    });
+                setSavingSpoonacular(false);
+                if (error) {
+                  toast.error("Failed to save API key");
+                } else {
+                  toast.success("Spoonacular API key saved");
+                  router.refresh();
+                }
+              }}
+              disabled={savingSpoonacular || !isOwner}
+            >
+              {savingSpoonacular ? "Saving..." : "Save"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
