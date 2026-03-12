@@ -16,6 +16,7 @@ import {
   ShoppingCart,
   ListTodo,
   Compass,
+  Calendar,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
@@ -23,17 +24,23 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PageTransition } from "./page-transition";
 
-const navItems = [
+const mobileNavItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/recipes", label: "Recipes", icon: UtensilsCrossed },
-  { href: "/recipes/discover", label: "Discover", icon: Compass },
   { href: "/meal-planner", label: "Meals", icon: CalendarDays },
+  { href: "/calendar", label: "Calendar", icon: Calendar },
   { href: "/grocery", label: "Grocery", icon: ShoppingCart },
   { href: "/todos", label: "To-Do", icon: ListTodo },
 ];
 
 const desktopNavItems = [
-  ...navItems,
+  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { href: "/recipes", label: "Recipes", icon: UtensilsCrossed },
+  { href: "/recipes/discover", label: "Discover", icon: Compass },
+  { href: "/meal-planner", label: "Meals", icon: CalendarDays },
+  { href: "/grocery", label: "Grocery", icon: ShoppingCart },
+  { href: "/calendar", label: "Calendar", icon: Calendar },
+  { href: "/todos", label: "To-Do", icon: ListTodo },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -171,7 +178,7 @@ export function AppShell({ user, children }: AppShellProps) {
 
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 z-50 flex w-full items-center justify-around border-t border-border bg-card/95 backdrop-blur-md md:hidden">
-        {navItems.map((item) => {
+        {mobileNavItems.map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href !== "/dashboard" && pathname.startsWith(item.href));

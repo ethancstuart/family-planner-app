@@ -159,6 +159,18 @@ export interface SpoonacularSearchResult {
   dishTypes: string[];
 }
 
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  allDay: boolean;
+  color?: string;
+  source: "google" | "meal-plan";
+  recipeId?: string;
+  mealType?: MealType;
+}
+
 export interface HouseholdSettings {
   id: string;
   household_id: string;

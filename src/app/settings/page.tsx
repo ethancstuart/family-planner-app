@@ -31,6 +31,12 @@ export default async function SettingsPage() {
     .select("user_id, role, users(email, full_name)")
     .eq("household_id", membership.household_id);
 
+  const { data: calConnection } = await supabase
+    .from("calendar_connections")
+    .select("id")
+    .eq("user_id", user.id)
+    .single();
+
   return (
     <AppShell user={user}>
       <div className="mx-auto max-w-2xl space-y-6">
@@ -47,6 +53,7 @@ export default async function SettingsPage() {
           settings={settings}
           members={(members ?? []) as unknown as Parameters<typeof SettingsForm>[0]["members"]}
           isOwner={membership.role === "owner"}
+          isCalendarConnected={!!calConnection}
         />
       </div>
     </AppShell>

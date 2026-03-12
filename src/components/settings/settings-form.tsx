@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Eye, EyeOff, Shield, Users, Compass } from "lucide-react";
+import { Eye, EyeOff, Shield, Users, Compass, Calendar } from "lucide-react";
 import { InviteSection } from "@/components/settings/invite-section";
+import { CalendarConnectionBanner } from "@/components/calendar/calendar-connection-banner";
 
 interface SettingsFormProps {
   householdId: string;
@@ -26,6 +27,7 @@ interface SettingsFormProps {
     users: { email: string; full_name: string | null } | null;
   }>;
   isOwner: boolean;
+  isCalendarConnected?: boolean;
 }
 
 export function SettingsForm({
@@ -34,6 +36,7 @@ export function SettingsForm({
   settings,
   members,
   isOwner,
+  isCalendarConnected,
 }: SettingsFormProps) {
   const router = useRouter();
   const [apiKey, setApiKey] = useState(settings?.claude_api_key_encrypted ?? "");
@@ -229,6 +232,21 @@ export function SettingsForm({
             </Button>
           </div>
         </div>
+      </div>
+
+      <Separator />
+
+      {/* Google Calendar */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-lg font-semibold">Google Calendar</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Connect your Google Calendar to see your schedule alongside meal plans
+          and sync planned meals as calendar events.
+        </p>
+        <CalendarConnectionBanner isConnected={isCalendarConnected ?? false} />
       </div>
     </div>
   );

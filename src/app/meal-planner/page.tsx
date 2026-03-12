@@ -59,6 +59,13 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
         .eq("meal_plan_id", mealPlan.id)
     : { data: [] };
 
+  // Check calendar connection
+  const { data: calConnection } = await supabase
+    .from("calendar_connections")
+    .select("id")
+    .eq("user_id", user.id)
+    .single();
+
   // Fetch all recipes for the picker
   const { data: recipes } = await supabase
     .from("recipes")
@@ -88,6 +95,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
           currentDate={weekDate}
           mealPlanId={mealPlan?.id ?? ""}
           hasSlots={hasAnySlots}
+          hasCalendarConnection={!!calConnection}
         />
 
         {!hasAnySlots && (recipes ?? []).length === 0 ? (
