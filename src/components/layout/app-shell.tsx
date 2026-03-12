@@ -72,7 +72,7 @@ export function AppShell({ user, children }: AppShellProps) {
   return (
     <div className="min-h-screen pb-16 md:pb-0">
       {/* Desktop sidebar */}
-      <aside className="glass fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-white/[0.06] md:flex">
+      <aside className="glass fixed inset-y-0 left-0 z-50 hidden w-60 flex-col md:flex">
         <div className="flex h-14 items-center gap-2.5 border-b border-white/[0.06] px-5">
           <ChefHat className="h-5 w-5 text-primary" />
           <span className="font-bold gradient-text">Family Planner</span>
@@ -150,7 +150,7 @@ export function AppShell({ user, children }: AppShellProps) {
       </aside>
 
       {/* Mobile top bar */}
-      <header className="glass fixed top-0 z-50 flex h-14 w-full items-center justify-between border-b border-white/[0.06] px-4 md:hidden">
+      <header className="glass fixed top-0 z-50 flex h-14 w-full items-center justify-between px-4 md:hidden">
         <div className="flex items-center gap-2">
           <ChefHat className="h-5 w-5 text-primary" />
           <span className="font-bold gradient-text">Family Planner</span>
@@ -186,7 +186,7 @@ export function AppShell({ user, children }: AppShellProps) {
       </header>
 
       {/* Mobile bottom nav */}
-      <nav className="glass fixed bottom-0 z-50 flex w-full items-center justify-around border-t border-white/[0.06] md:hidden">
+      <nav className="glass fixed bottom-0 z-50 flex w-full items-center justify-around md:hidden">
         {mobileNavItems.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -219,7 +219,7 @@ export function AppShell({ user, children }: AppShellProps) {
 
       {/* Main content */}
       <main className="pt-14 md:pt-0 md:pl-60">
-        <div className="mx-auto max-w-5xl p-4 sm:p-6">
+        <div className="mx-auto max-w-6xl p-4 sm:p-6">
           <PageTransition key={pathname}>{children}</PageTransition>
         </div>
       </main>

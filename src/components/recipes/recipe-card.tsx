@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import type { Recipe } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Clock, Users, Link2, Video, Camera, PenLine, Compass } from "lucide-react";
@@ -32,22 +33,84 @@ function getGradient(recipe: Recipe) {
 
 interface RecipeCardProps {
   recipe: Recipe;
+  layout?: "grid" | "list";
 }
 
-export function RecipeCard({ recipe }: RecipeCardProps) {
+export function RecipeCard({ recipe, layout = "grid" }: RecipeCardProps) {
   const totalTime =
     (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
   const SourceIcon = sourceIcons[recipe.source_type] ?? PenLine;
   const gradient = getGradient(recipe);
+
+  if (layout === "list") {
+    return (
+      <Link
+        href={`/recipes/${recipe.id}`}
+        className="group flex items-center gap-4 rounded-xl border border-white/[0.06] bg-card p-3 surface-raised transition-all hover:surface-elevated hover:-translate-y-0.5"
+      >
+        {/* Thumbnail */}
+        <div className={`relative h-16 w-20 shrink-0 overflow-hidden rounded-lg ${!recipe.image_url ? `bg-gradient-to-r ${gradient}` : ""}`}>
+          {recipe.image_url ? (
+            <Image
+              src={recipe.image_url}
+              alt={recipe.title}
+              fill
+              className="object-cover"
+              sizes="80px"
+            />
+          ) : null}
+          {recipe.is_favorite && (
+            <div className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-card/90">
+              <Heart className="h-3 w-3 fill-red-500 text-red-500" />
+            </div>
+          )}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate font-semibold group-hover:text-primary transition-colors">
+            {recipe.title}
+          </h3>
+          <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+            {totalTime > 0 && (
+              <span className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {totalTime}m
+              </span>
+            )}
+            {recipe.servings && (
+              <span className="flex items-center gap-1">
+                <Users className="h-3 w-3" />
+                {recipe.servings}
+              </span>
+            )}
+            {recipe.tags.length > 0 && (
+              <span>{recipe.tags[0]}</span>
+            )}
+          </div>
+        </div>
+
+        <SourceIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+      </Link>
+    );
+  }
 
   return (
     <Link
       href={`/recipes/${recipe.id}`}
       className="group flex flex-col rounded-xl border border-white/[0.06] bg-card surface-raised transition-all hover:surface-elevated hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
     >
-      {/* Gradient header — taller with soft fade */}
-      <div className={`relative h-12 rounded-t-xl bg-gradient-to-r ${gradient}`}>
-        <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-card to-transparent" />
+      {/* Image or gradient header */}
+      <div className={`relative h-32 rounded-t-xl overflow-hidden ${!recipe.image_url ? `bg-gradient-to-r ${gradient}` : ""}`}>
+        {recipe.image_url ? (
+          <Image
+            src={recipe.image_url}
+            alt={recipe.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : null}
+        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-card to-transparent" />
         {recipe.is_favorite && (
           <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-card/90 shadow-sm">
             <Heart className="h-3.5 w-3.5 fill-red-500 text-red-500" />

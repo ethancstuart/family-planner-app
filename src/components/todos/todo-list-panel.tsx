@@ -17,6 +17,7 @@ interface TodoListPanelProps {
   items: TodoItem[];
   members: User[];
   currentUserId: string;
+  accentGradient?: string;
 }
 
 export function TodoListPanel({
@@ -24,6 +25,7 @@ export function TodoListPanel({
   items,
   members,
   currentUserId,
+  accentGradient = "from-primary to-accent",
 }: TodoListPanelProps) {
   const router = useRouter();
   const [open, setOpen] = useState(true);
@@ -125,7 +127,7 @@ export function TodoListPanel({
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-white/[0.06] bg-card surface-raised">
-      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-primary to-accent" />
+      <div className={`absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r ${accentGradient}`} />
       <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
       <button
         onClick={() => setOpen(!open)}

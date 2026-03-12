@@ -72,6 +72,24 @@ export function TodoPageClient({
     );
   }
 
+  const remaining = allItems.filter((i) => !i.completed).length;
+  const overdue = allItems.filter((i) => {
+    if (i.completed || !i.due_date) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(i.due_date + "T00:00:00") < today;
+  }).length;
+  const done = allItems.filter((i) => i.completed).length;
+
+  const accentGradients = [
+    "from-primary to-accent",
+    "from-teal-400 to-cyan-500",
+    "from-amber-400 to-orange-500",
+    "from-violet-400 to-purple-500",
+    "from-rose-400 to-pink-500",
+    "from-emerald-400 to-green-500",
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -80,13 +98,29 @@ export function TodoPageClient({
             To-Dos
           </h1>
           <p className="mt-1 text-muted-foreground">
-            {allItems.filter((i) => !i.completed).length} tasks remaining
+            {remaining} tasks remaining
           </p>
         </div>
         <Button onClick={() => setDialogOpen(true)} size="sm">
           <Plus className="mr-1.5 h-4 w-4" />
           New List
         </Button>
+      </div>
+
+      {/* Stats bar */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded-xl border border-white/[0.06] bg-card p-4 text-center surface-raised">
+          <p className="text-2xl font-bold">{remaining}</p>
+          <p className="text-xs text-muted-foreground">Remaining</p>
+        </div>
+        <div className="rounded-xl border border-white/[0.06] bg-card p-4 text-center surface-raised">
+          <p className={`text-2xl font-bold ${overdue > 0 ? "text-destructive" : ""}`}>{overdue}</p>
+          <p className="text-xs text-muted-foreground">Overdue</p>
+        </div>
+        <div className="rounded-xl border border-white/[0.06] bg-card p-4 text-center surface-raised">
+          <p className="text-2xl font-bold">{done}</p>
+          <p className="text-xs text-muted-foreground">Done</p>
+        </div>
       </div>
 
       <TodoFilters active={activeFilter} onChange={setActiveFilter} />
@@ -97,7 +131,7 @@ export function TodoPageClient({
         animate="visible"
         variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
       >
-        {lists.map((list) => {
+        {lists.map((list, index) => {
           const listItems = filterItems(
             allItems.filter((i) => i.todo_list_id === list.id)
           );
@@ -118,6 +152,7 @@ export function TodoPageClient({
                 items={listItems}
                 members={members}
                 currentUserId={currentUserId}
+                accentGradient={accentGradients[index % accentGradients.length]}
               />
             </motion.div>
           );

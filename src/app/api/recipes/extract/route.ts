@@ -10,7 +10,8 @@ const RECIPE_EXTRACTION_PROMPT = `Extract a structured recipe from the following
   "tags": ["dinner", "quick"],
   "prep_time_minutes": 15,
   "cook_time_minutes": 30,
-  "servings": 4
+  "servings": 4,
+  "image_url": "https://example.com/photo.jpg or null"
 }
 
 Rules:
@@ -19,6 +20,7 @@ Rules:
 - tags should be lowercase, practical categories (dinner, lunch, snack, kids, quick, meal-prep, dessert, vegetarian, etc.)
 - If you can't determine a value, use null
 - steps should be clear, concise instructions
+- image_url should be the main photo URL of the recipe if available, or null
 - Do NOT include any text outside the JSON object`;
 
 export async function POST(request: Request) {
@@ -65,8 +67,12 @@ export async function POST(request: Request) {
     let sourceType: string = mode;
     let sourceUrl: string | null = url || null;
 
+    let ogImage: string | null = null;
+
     if (mode === "url") {
-      content = await extractFromUrl(url);
+      const { text, extractedOgImage } = await extractFromUrl(url);
+      content = text;
+      ogImage = extractedOgImage;
     } else if (mode === "video") {
       content = await extractFromVideo(url);
     } else if (mode === "image" && image) {
@@ -88,6 +94,11 @@ export async function POST(request: Request) {
     // Send to Claude for structured extraction
     const recipe = await extractWithClaude(content, apiKey);
 
+    // Use og:image as fallback if Claude didn't extract one
+    if (!recipe.image_url && ogImage) {
+      recipe.image_url = ogImage;
+    }
+
     return NextResponse.json({
       recipe: { ...recipe, source_type: sourceType, source_url: sourceUrl },
     });
@@ -97,7 +108,7 @@ export async function POST(request: Request) {
   }
 }
 
-async function extractFromUrl(url: string): Promise<string> {
+async function extractFromUrl(url: string): Promise<{ text: string; extractedOgImage: string | null }> {
   const res = await fetch(url, {
     headers: {
       "User-Agent":
@@ -108,6 +119,12 @@ async function extractFromUrl(url: string): Promise<string> {
   if (!res.ok) throw new Error("Could not fetch URL");
 
   const html = await res.text();
+
+  // Extract og:image for fallback
+  const ogImageMatch = html.match(
+    /<meta[^>]*property="og:image"[^>]*content="([^"]*)"[^>]*>/i
+  );
+  const extractedOgImage = ogImageMatch?.[1] ?? null;
 
   // Try JSON-LD first (most recipe sites use this)
   const jsonLdMatch = html.match(
@@ -123,7 +140,7 @@ async function extractFromUrl(url: string): Promise<string> {
         const data = JSON.parse(jsonStr);
         const recipes = findRecipeInJsonLd(data);
         if (recipes) {
-          return `JSON-LD Recipe Data:\n${JSON.stringify(recipes, null, 2)}`;
+          return { text: `JSON-LD Recipe Data:\n${JSON.stringify(recipes, null, 2)}`, extractedOgImage };
         }
       } catch {
         continue;
@@ -140,7 +157,7 @@ async function extractFromUrl(url: string): Promise<string> {
     .trim()
     .slice(0, 8000);
 
-  return `Web page content from ${url}:\n${text}`;
+  return { text: `Web page content from ${url}:\n${text}`, extractedOgImage };
 }
 
 function findRecipeInJsonLd(data: unknown): unknown | null {

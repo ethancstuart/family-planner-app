@@ -12,10 +12,9 @@ import {
   CalendarDays,
   ShoppingCart,
   ListTodo,
-  Clock,
 } from "lucide-react";
 import { getWeekStartDate } from "@/lib/utils";
-import { MEAL_TYPE_LABELS, DAYS_OF_WEEK_SHORT } from "@/lib/constants";
+import { DAYS_OF_WEEK_SHORT } from "@/lib/constants";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -95,14 +94,14 @@ export default async function DashboardPage() {
   const favorites = favoritesResult.data ?? [];
   const firstName = user.user_metadata?.full_name?.split(" ")[0] || "there";
 
-  // Fetch meal slots if we have a plan
+  // Fetch meal slots if we have a plan — get all 7 days
   let upcomingMeals: { day_of_week: number; meal_type: string; recipe: { title: string } | null }[] = [];
   if (mealPlanResult.data) {
     const { data: slots } = await supabase
       .from("meal_plan_slots")
       .select("day_of_week, meal_type, recipe:recipes(title)")
       .eq("meal_plan_id", mealPlanResult.data.id)
-      .limit(3);
+      .limit(28);
     if (slots) {
       upcomingMeals = slots.map((s: Record<string, unknown>) => ({
         day_of_week: s.day_of_week as number,
@@ -128,12 +127,19 @@ export default async function DashboardPage() {
 
   const pendingTodos = todosResult.data ?? [];
 
+  // Group meals by day for 7-day strip
+  const mealsByDay: Record<number, { meal_type: string; recipe: { title: string } | null }[]> = {};
+  for (const slot of upcomingMeals) {
+    if (!mealsByDay[slot.day_of_week]) mealsByDay[slot.day_of_week] = [];
+    mealsByDay[slot.day_of_week].push(slot);
+  }
+
   return (
     <AppShell user={user}>
       <div className="space-y-8">
-        {/* Greeting */}
+        {/* Greeting hero */}
         <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Hey, <span className="gradient-text">{firstName}</span>
           </h1>
           <p className="mt-1 text-muted-foreground">
@@ -168,195 +174,190 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {/* Quick actions */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Link
-            href="/recipes"
-            className="group flex items-center gap-4 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-accent/10">
-              <UtensilsCrossed className="h-5 w-5 text-primary" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold">Recipe Vault</p>
-              <p className="text-sm text-muted-foreground">
-                {recipeCount} recipe{recipeCount !== 1 ? "s" : ""} saved
-              </p>
-            </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </Link>
-
-          <Link
-            href="/recipes"
-            className="group flex items-center gap-4 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 to-accent/5 p-5 transition-all hover:border-primary/40 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5"
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-accent/10">
-              <Plus className="h-5 w-5 text-primary" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-primary">Add a recipe</p>
-              <p className="text-sm text-muted-foreground">
-                URL, video, photo, or manual
-              </p>
-            </div>
-          </Link>
-
-          <Link
-            href="/settings"
-            className="group flex items-center gap-4 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-muted to-muted/50">
-              <Settings className="h-5 w-5 text-muted-foreground" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold">Settings</p>
-              <p className="text-sm text-muted-foreground">
-                API keys & household
-              </p>
-            </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </div>
-
-        {/* Hub widgets */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {/* This Week's Meals */}
-          <Link
-            href="/meal-planner"
-            className="group flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
-          >
-            <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-primary to-accent" />
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-primary" />
-                <h3 className="text-sm font-semibold">This Week&apos;s Meals</h3>
-              </div>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-            </div>
-            {upcomingMeals.length > 0 ? (
-              <div className="space-y-2">
-                {upcomingMeals.map((slot, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm">
-                    <span className="w-8 text-[10px] font-medium uppercase text-muted-foreground">
-                      {DAYS_OF_WEEK_SHORT[slot.day_of_week]}
-                    </span>
-                    <span className="truncate text-xs">
-                      {slot.recipe?.title}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                No meals planned yet. Tap to start planning.
-              </p>
-            )}
-          </Link>
-
-          {/* Active Grocery List */}
-          <Link
-            href={groceryList ? `/grocery/${groceryList.id}` : "/grocery"}
-            className="group relative flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
-          >
-            <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-teal-400 to-cyan-500" />
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="h-4 w-4 text-primary" />
-                <h3 className="text-sm font-semibold">
-                  {groceryList?.title ?? "Grocery List"}
-                </h3>
-              </div>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-            </div>
-            {groceryList && groceryProgress.total > 0 ? (
-              <div className="space-y-2">
-                <div className="relative h-2 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-accent transition-all"
-                    style={{
-                      width: `${Math.round((groceryProgress.checked / groceryProgress.total) * 100)}%`,
-                    }}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {groceryProgress.checked}/{groceryProgress.total} items checked
-                </p>
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                {groceryList
-                  ? "List is empty. Add some items."
-                  : "No active list. Create one from your meal plan."}
-              </p>
-            )}
-          </Link>
-
-          {/* Pending Tasks */}
-          <Link
-            href="/todos"
-            className="group relative flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
-          >
-            <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-amber-400 to-orange-500" />
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ListTodo className="h-4 w-4 text-primary" />
-                <h3 className="text-sm font-semibold">Pending Tasks</h3>
-              </div>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-            </div>
-            {pendingTodos.length > 0 ? (
-              <div className="space-y-1.5">
-                {pendingTodos.map((todo) => (
-                  <div key={todo.id} className="flex items-center gap-2">
-                    <div className="h-3.5 w-3.5 shrink-0 rounded-full border-2 border-muted-foreground/30" />
-                    <span className="truncate text-xs">{todo.title}</span>
-                    {todo.due_date && (
-                      <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">
-                        {new Date(todo.due_date + "T00:00:00").toLocaleDateString(
-                          "en-US",
-                          { month: "short", day: "numeric" }
-                        )}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                All caught up! No pending tasks.
-              </p>
-            )}
-          </Link>
-        </div>
-
-        {/* Favorites */}
-        {favorites.length > 0 && (
-          <div>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Favorites</h2>
+        {/* Two-zone layout */}
+        <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+          {/* Left zone */}
+          <div className="space-y-6">
+            {/* Quick actions — compact pill buttons */}
+            <div className="flex flex-wrap gap-2">
               <Link
                 href="/recipes"
-                className="text-sm text-primary hover:underline"
+                className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-card px-4 py-2 text-sm font-medium surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
               >
-                View all
+                <UtensilsCrossed className="h-4 w-4 text-primary" />
+                Recipes
+                <span className="text-muted-foreground">({recipeCount})</span>
+              </Link>
+              <Link
+                href="/recipes"
+                className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/5 px-4 py-2 text-sm font-medium text-primary transition-all hover:border-primary/40 hover:-translate-y-0.5"
+              >
+                <Plus className="h-4 w-4" />
+                Add Recipe
+              </Link>
+              <Link
+                href="/meal-planner"
+                className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-card px-4 py-2 text-sm font-medium surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+              >
+                <CalendarDays className="h-4 w-4 text-primary" />
+                Meal Plan
+              </Link>
+              <Link
+                href="/settings"
+                className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-card px-4 py-2 text-sm font-medium surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+              >
+                <Settings className="h-4 w-4 text-muted-foreground" />
+                Settings
               </Link>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {favorites.map((recipe) => (
-                <Link
-                  key={recipe.id}
-                  href={`/recipes/${recipe.id}`}
-                  className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-card px-4 py-3 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
-                >
-                  <ChefHat className="h-4 w-4 shrink-0 text-primary" />
-                  <span className="truncate text-sm font-medium">
-                    {recipe.title}
-                  </span>
-                </Link>
-              ))}
-            </div>
+
+            {/* Week meal strip */}
+            <Link href="/meal-planner" className="group block">
+              <div className="rounded-xl border border-white/[0.06] bg-card p-4 surface-raised transition-all hover:surface-glow">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-primary" />
+                    <h3 className="text-sm font-semibold">This Week&apos;s Meals</h3>
+                  </div>
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                </div>
+                <div className="grid grid-cols-7 gap-1.5">
+                  {DAYS_OF_WEEK_SHORT.map((day, i) => {
+                    const dayMeals = mealsByDay[i] ?? [];
+                    return (
+                      <div key={i} className="text-center">
+                        <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                          {day}
+                        </p>
+                        {dayMeals.length > 0 ? (
+                          <div className="space-y-0.5">
+                            {dayMeals.slice(0, 2).map((m, j) => (
+                              <p key={j} className="truncate text-[10px] leading-tight">
+                                {m.recipe?.title ?? m.meal_type}
+                              </p>
+                            ))}
+                            {dayMeals.length > 2 && (
+                              <p className="text-[10px] text-muted-foreground">+{dayMeals.length - 2}</p>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-muted-foreground/50">&mdash;</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </Link>
+
+            {/* Favorites — horizontal scroll */}
+            {favorites.length > 0 && (
+              <div>
+                <div className="mb-3 flex items-center justify-between">
+                  <h2 className="text-sm font-semibold">Favorites</h2>
+                  <Link
+                    href="/recipes"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    View all
+                  </Link>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {favorites.map((recipe) => (
+                    <Link
+                      key={recipe.id}
+                      href={`/recipes/${recipe.id}`}
+                      className="flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.06] bg-card px-4 py-2.5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+                    >
+                      <ChefHat className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="whitespace-nowrap text-sm font-medium">
+                        {recipe.title}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Right zone */}
+          <div className="space-y-4">
+            {/* Grocery progress widget */}
+            <Link
+              href={groceryList ? `/grocery/${groceryList.id}` : "/grocery"}
+              className="group relative block rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+            >
+              <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-teal-400 to-cyan-500" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-semibold">
+                    {groceryList?.title ?? "Grocery List"}
+                  </h3>
+                </div>
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </div>
+              {groceryList && groceryProgress.total > 0 ? (
+                <div className="mt-3 space-y-2">
+                  <div className="relative h-2 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-accent transition-all"
+                      style={{
+                        width: `${Math.round((groceryProgress.checked / groceryProgress.total) * 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {groceryProgress.checked}/{groceryProgress.total} items checked
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {groceryList
+                    ? "List is empty. Add some items."
+                    : "No active list. Create one from your meal plan."}
+                </p>
+              )}
+            </Link>
+
+            {/* Pending tasks widget */}
+            <Link
+              href="/todos"
+              className="group relative block rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+            >
+              <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-amber-400 to-orange-500" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ListTodo className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-semibold">Pending Tasks</h3>
+                </div>
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </div>
+              {pendingTodos.length > 0 ? (
+                <div className="mt-3 space-y-1.5">
+                  {pendingTodos.map((todo) => (
+                    <div key={todo.id} className="flex items-center gap-2">
+                      <div className="h-3.5 w-3.5 shrink-0 rounded-full border-2 border-muted-foreground/30" />
+                      <span className="truncate text-xs">{todo.title}</span>
+                      {todo.due_date && (
+                        <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">
+                          {new Date(todo.due_date + "T00:00:00").toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric" }
+                          )}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  All caught up! No pending tasks.
+                </p>
+              )}
+            </Link>
+          </div>
+        </div>
       </div>
     </AppShell>
   );

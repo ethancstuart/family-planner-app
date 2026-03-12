@@ -66,52 +66,30 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Browser mockup */}
-          <div className="relative mx-auto mt-16 max-w-3xl" style={{ perspective: "1200px" }}>
+          {/* Floating recipe card mockup */}
+          <div className="relative mx-auto mt-16 max-w-xs" style={{ perspective: "1200px" }}>
             <div
-              className="surface-glow overflow-hidden rounded-xl border border-white/[0.06] bg-card"
-              style={{ transform: "rotateX(4deg)" }}
+              className="animate-float surface-glow overflow-hidden rounded-xl border border-white/[0.06] bg-card"
+              style={{ transform: "rotateY(-6deg) rotateX(4deg)" }}
             >
-              {/* Title bar */}
-              <div className="flex items-center gap-2 border-b border-white/[0.06] bg-muted/50 px-4 py-2.5">
-                <div className="flex gap-1.5">
-                  <div className="h-3 w-3 rounded-full bg-red-400/60" />
-                  <div className="h-3 w-3 rounded-full bg-yellow-400/60" />
-                  <div className="h-3 w-3 rounded-full bg-green-400/60" />
+              {/* Fake image area */}
+              <div className="h-40 bg-gradient-to-br from-rose-500/25 to-pink-500/10" />
+              <div className="p-5">
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold">Lemon Herb Chicken</p>
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-card/90 shadow-sm">
+                    <span className="text-red-500 text-xs">&#9829;</span>
+                  </div>
                 </div>
-                <div className="mx-auto rounded-md bg-muted px-12 py-1 text-[10px] text-muted-foreground">
-                  familyplanner.app/dashboard
+                <p className="mt-1 text-sm text-muted-foreground">Crispy skin, bright citrus glaze</p>
+                <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>45m</span>
+                  <span>4 servings</span>
+                  <span>8 ingredients</span>
                 </div>
-              </div>
-              {/* Fake dashboard content */}
-              <div className="p-6">
-                <div className="mb-4 flex items-center gap-2">
-                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-primary/30 to-accent/20" />
-                  <div className="h-4 w-28 rounded bg-foreground/10" />
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {["Recipe Vault", "Meal Plan", "Grocery List"].map((label) => (
-                    <div
-                      key={label}
-                      className="rounded-lg border border-white/[0.06] bg-muted/30 p-3"
-                    >
-                      <div className="mb-2 h-3 w-3 rounded bg-gradient-to-br from-primary/40 to-accent/20" />
-                      <div className="h-3 w-16 rounded bg-foreground/8" />
-                      <div className="mt-1 h-2 w-12 rounded bg-foreground/5" />
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-3 grid grid-cols-3 gap-3">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="rounded-lg border border-white/[0.06] bg-muted/30 p-3"
-                    >
-                      <div className="mb-2 h-6 w-full rounded bg-gradient-to-r from-primary/10 to-accent/5" />
-                      <div className="h-2 w-full rounded bg-foreground/5" />
-                      <div className="mt-1 h-2 w-2/3 rounded bg-foreground/5" />
-                    </div>
-                  ))}
+                <div className="mt-3 flex gap-1.5">
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">dinner</span>
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">quick</span>
                 </div>
               </div>
             </div>
@@ -234,7 +212,7 @@ export default async function Home() {
               </h2>
             </div>
 
-            <div className="mt-12 grid gap-6 sm:grid-cols-2">
+            <div className="mt-12 space-y-8">
               {[
                 {
                   icon: UtensilsCrossed,
@@ -246,29 +224,29 @@ export default async function Home() {
                   icon: CalendarDays,
                   title: "Meal Planner",
                   desc: "Plan breakfast, lunch, dinner, and snacks for the week. Drag and drop from your vault. Template weeks for easy reuse.",
-                  status: "Coming soon",
+                  status: "Live",
                 },
                 {
                   icon: ShoppingCart,
                   title: "Smart Grocery Lists",
                   desc: "Auto-generate from your meal plan. Smart ingredient merging, aisle grouping, and a tap-to-check shopping mode.",
-                  status: "Coming soon",
+                  status: "Live",
                 },
                 {
                   icon: ListTodo,
                   title: "Family To-Do",
-                  desc: "Shared task lists for chores, errands, and school stuff. Assign to family members, set recurring schedules.",
-                  status: "Coming soon",
+                  desc: "Shared task lists for chores, errands, and school stuff. Assign to family members, set due dates, and track progress.",
+                  status: "Live",
                 },
               ].map((item, i) => (
                 <StaggerItem key={item.title} index={i}>
-                  <div className="flex gap-4 rounded-xl border border-white/[0.06] bg-card p-6 surface-raised transition-all hover:-translate-y-0.5 hover:surface-glow">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
-                      <item.icon className="h-5 w-5 text-primary" />
+                  <div className={`flex flex-col gap-6 sm:flex-row sm:items-center ${i % 2 !== 0 ? "sm:flex-row-reverse" : ""}`}>
+                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 sm:h-24 sm:w-24">
+                      <item.icon className="h-8 w-8 text-primary sm:h-10 sm:w-10" />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold">{item.title}</h3>
+                    <div className={i % 2 !== 0 ? "sm:text-right" : ""}>
+                      <div className={`flex items-center gap-2 ${i % 2 !== 0 ? "sm:justify-end" : ""}`}>
+                        <h3 className="text-xl font-semibold">{item.title}</h3>
                         <span
                           className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
                             item.status === "Live"
@@ -279,7 +257,7 @@ export default async function Home() {
                           {item.status}
                         </span>
                       </div>
-                      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                         {item.desc}
                       </p>
                     </div>
@@ -293,7 +271,7 @@ export default async function Home() {
 
       {/* CTA */}
       <section className="relative py-16 sm:py-24 overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,oklch(0.72_0.19_25/0.08),oklch(0.72_0.16_280/0.05),transparent)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_50%,oklch(0.72_0.19_25/0.15),oklch(0.72_0.16_280/0.08),transparent)]" />
         <div className="relative mx-auto max-w-5xl px-6 text-center">
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Ready to organize your family&apos;s meals?

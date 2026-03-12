@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import Image from "next/image";
 import {
   ArrowLeft,
   Heart,
@@ -129,6 +130,19 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
           </p>
         )}
       </div>
+
+      {/* Image */}
+      {recipe.image_url && (
+        <div className="relative h-48 sm:h-64 overflow-hidden rounded-xl">
+          <Image
+            src={recipe.image_url}
+            alt={recipe.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, 672px"
+          />
+        </div>
+      )}
 
       {/* Stats bar */}
       <div className="glass-subtle flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg px-4 py-3 text-sm">

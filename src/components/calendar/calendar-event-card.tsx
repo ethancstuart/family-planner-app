@@ -57,7 +57,8 @@ export function CalendarEventCard({ event }: CalendarEventCardProps) {
 
   // Google Calendar event
   return (
-    <div className="rounded-lg border border-white/[0.06] bg-blue-500/5 p-2 backdrop-blur-sm">
+    <div className="relative rounded-lg border border-white/[0.06] bg-blue-500/5 p-2 pl-3 backdrop-blur-sm">
+      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg bg-blue-500/50" />
       {!event.allDay && (
         <p className="text-[10px] text-muted-foreground">
           {formatTime(event.start)}

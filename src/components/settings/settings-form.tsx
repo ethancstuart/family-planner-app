@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Eye, EyeOff, Shield, Users, Compass, Calendar } from "lucide-react";
 import { InviteSection } from "@/components/settings/invite-section";
@@ -70,16 +69,19 @@ export function SettingsForm({
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Household */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
-            <Users className="h-4 w-4 text-primary" />
+      <div className="glass rounded-xl p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+            <Users className="h-5 w-5 text-primary" />
           </div>
-          <h2 className="text-lg font-semibold">Household</h2>
+          <div>
+            <h2 className="text-lg font-semibold">Household</h2>
+            <p className="text-sm text-muted-foreground">Manage your household and members</p>
+          </div>
         </div>
-        <div className="glass rounded-xl p-5">
+        <div className="rounded-lg border border-white/[0.06] bg-card p-4">
           <p className="text-lg font-semibold">{householdName}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             {members.length} member{members.length !== 1 ? "s" : ""}
@@ -90,7 +92,7 @@ export function SettingsForm({
           {members.map((m) => (
             <div
               key={m.user_id}
-              className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3"
+              className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-card px-4 py-3"
             >
               <div>
                 <p className="text-sm font-medium">
@@ -107,29 +109,23 @@ export function SettingsForm({
             </div>
           ))}
         </div>
+
+        {isOwner && <InviteSection />}
       </div>
 
-      {isOwner && (
-        <>
-          <Separator />
-          <InviteSection />
-        </>
-      )}
-
-      <Separator />
-
       {/* Claude API Key */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
-            <Shield className="h-4 w-4 text-primary" />
+      <div className="glass rounded-xl p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+            <Shield className="h-5 w-5 text-primary" />
           </div>
-          <h2 className="text-lg font-semibold">Claude API Key</h2>
+          <div>
+            <h2 className="text-lg font-semibold">Claude API Key</h2>
+            <p className="text-sm text-muted-foreground">Powers AI recipe import</p>
+          </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          Powers AI recipe import from URLs, videos, and photos. Your key is
-          stored securely and only used server-side. All household members share
-          this key.
+          Your key is stored securely and only used server-side. All household members share this key.
         </p>
 
         <div className="space-y-2">
@@ -169,18 +165,19 @@ export function SettingsForm({
         </div>
       </div>
 
-      <Separator />
-
       {/* Spoonacular API Key */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
-            <Compass className="h-4 w-4 text-primary" />
+      <div className="glass rounded-xl p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+            <Compass className="h-5 w-5 text-primary" />
           </div>
-          <h2 className="text-lg font-semibold">Spoonacular API Key</h2>
+          <div>
+            <h2 className="text-lg font-semibold">Spoonacular API Key</h2>
+            <p className="text-sm text-muted-foreground">Powers recipe discovery</p>
+          </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          Powers recipe discovery. Get a free API key at{" "}
+          Get a free API key at{" "}
           <a href="https://spoonacular.com/food-api" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
             spoonacular.com
           </a>.
@@ -240,20 +237,22 @@ export function SettingsForm({
         </div>
       </div>
 
-      <Separator />
-
       {/* Google Calendar */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
-            <Calendar className="h-4 w-4 text-primary" />
+      <div className="glass rounded-xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+              <Calendar className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold">Google Calendar</h2>
+              <p className="text-sm text-muted-foreground">Sync your schedule with meal plans</p>
+            </div>
           </div>
-          <h2 className="text-lg font-semibold">Google Calendar</h2>
+          <Badge variant={isCalendarConnected ? "default" : "secondary"}>
+            {isCalendarConnected ? "Connected" : "Not connected"}
+          </Badge>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Connect your Google Calendar to see your schedule alongside meal plans
-          and sync planned meals as calendar events.
-        </p>
         <CalendarConnectionBanner isConnected={isCalendarConnected ?? false} />
       </div>
     </div>

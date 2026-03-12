@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { MealPlanSlot, Recipe, DayOfWeek, MealType } from "@/types";
 import { DayColumn } from "./day-column";
@@ -41,6 +41,17 @@ export function WeekView({
 
   const [activeSlot, setActiveSlot] = useState<MealPlanSlot | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const todayRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to today's column on mobile
+  useEffect(() => {
+    if (todayRef.current && containerRef.current) {
+      const container = containerRef.current;
+      const todayEl = todayRef.current;
+      const scrollLeft = todayEl.offsetLeft - container.offsetLeft - 16;
+      container.scrollTo({ left: scrollLeft, behavior: "smooth" });
+    }
+  }, []);
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: { distance: 8 },
@@ -140,6 +151,18 @@ export function WeekView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
+      {/* Summary row */}
+      <div className="mb-2 hidden md:grid md:grid-cols-7 gap-3">
+        {DAYS_OF_WEEK_SHORT.map((dayName, index) => {
+          const count = slots.filter((s) => s.day_of_week === index).length;
+          return (
+            <div key={index} className="text-center text-[10px] font-medium text-muted-foreground">
+              {count > 0 ? `${count} meal${count !== 1 ? "s" : ""}` : "\u00A0"}
+            </div>
+          );
+        })}
+      </div>
+
       <div
         ref={containerRef}
         className="flex gap-3 overflow-x-auto pb-4 md:grid md:grid-cols-7 md:overflow-visible"
@@ -153,16 +176,17 @@ export function WeekView({
           );
 
           return (
-            <DayColumn
-              key={index}
-              dayName={dayName}
-              dayOfWeek={index as DayOfWeek}
-              date={date}
-              isToday={isToday}
-              slots={daySlots}
-              mealPlanId={mealPlanId}
-              recipes={recipes}
-            />
+            <div key={index} ref={isToday ? todayRef : undefined}>
+              <DayColumn
+                dayName={dayName}
+                dayOfWeek={index as DayOfWeek}
+                date={date}
+                isToday={isToday}
+                slots={daySlots}
+                mealPlanId={mealPlanId}
+                recipes={recipes}
+              />
+            </div>
           );
         })}
       </div>

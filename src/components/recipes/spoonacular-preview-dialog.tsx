@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -13,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
 import { Clock, Users, Save, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Ingredient } from "@/types";
@@ -151,11 +151,15 @@ export function SpoonacularPreviewDialog({
             </DialogHeader>
 
             {recipe.image_url && (
-              <img
-                src={recipe.image_url}
-                alt={recipe.title}
-                className="h-48 w-full rounded-lg object-cover"
-              />
+              <div className="relative h-48 w-full overflow-hidden rounded-lg">
+                <Image
+                  src={recipe.image_url}
+                  alt={recipe.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 100vw, 448px"
+                />
+              </div>
             )}
 
             {recipe.description && (

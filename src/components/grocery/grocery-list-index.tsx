@@ -65,43 +65,76 @@ export function GroceryListIndex({
         </Button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {lists.map((list) => {
-          const counts = itemCounts[list.id] ?? { total: 0, checked: 0 };
-          const isDone = counts.total > 0 && counts.checked === counts.total;
+      {/* Hero: most recent list */}
+      {(() => {
+        const heroList = lists[0];
+        const heroCounts = itemCounts[heroList.id] ?? { total: 0, checked: 0 };
+        const heroIsDone = heroCounts.total > 0 && heroCounts.checked === heroCounts.total;
 
-          return (
-            <Link
-              key={list.id}
-              href={`/grocery/${list.id}`}
-              className="group flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
-                    <ShoppingCart className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-semibold">{list.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {counts.total === 0
-                        ? "Empty list"
-                        : isDone
-                          ? "All done!"
-                          : `${counts.checked}/${counts.total} items`}
-                    </p>
-                  </div>
+        return (
+          <Link
+            href={`/grocery/${heroList.id}`}
+            className="group block rounded-xl border border-white/[0.06] bg-card p-6 surface-raised transition-all hover:surface-glow"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+                  <ShoppingCart className="h-6 w-6 text-primary" />
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                <div>
+                  <p className="text-lg font-semibold">{heroList.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {heroCounts.total === 0
+                      ? "Empty list"
+                      : heroIsDone
+                        ? "All done!"
+                        : `${heroCounts.checked}/${heroCounts.total} items`}
+                  </p>
+                </div>
               </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+            </div>
+            {heroCounts.total > 0 && (
+              <div className="mt-4">
+                <ProgressBar value={heroCounts.checked} max={heroCounts.total} />
+              </div>
+            )}
+          </Link>
+        );
+      })()}
 
-              {counts.total > 0 && (
-                <ProgressBar value={counts.checked} max={counts.total} />
-              )}
-            </Link>
-          );
-        })}
-      </div>
+      {/* Other lists — compact rows */}
+      {lists.length > 1 && (
+        <div className="divide-y divide-white/[0.06] rounded-xl border border-white/[0.06] bg-card surface-raised">
+          {lists.slice(1).map((list) => {
+            const counts = itemCounts[list.id] ?? { total: 0, checked: 0 };
+            const isDone = counts.total > 0 && counts.checked === counts.total;
+
+            return (
+              <Link
+                key={list.id}
+                href={`/grocery/${list.id}`}
+                className="group flex items-center justify-between px-5 py-3.5 transition-colors hover:bg-white/[0.03]"
+              >
+                <div className="flex items-center gap-3">
+                  <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                  <p className="font-medium">{list.title}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {counts.total === 0
+                      ? "Empty"
+                      : isDone
+                        ? "Done"
+                        : `${counts.checked}/${counts.total}`}
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
       <CreateListDialog
         open={dialogOpen}

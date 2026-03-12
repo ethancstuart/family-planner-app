@@ -111,6 +111,7 @@ export function ImportRecipeForm({ mode, onSuccess, onBack }: ImportRecipeFormPr
       servings: recipe.servings,
       source_url: recipe.source_url,
       source_type: recipe.source_type,
+      image_url: recipe.image_url ?? null,
       created_by: user.id,
     });
 

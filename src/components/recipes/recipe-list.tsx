@@ -6,8 +6,9 @@ import { RecipeCard } from "./recipe-card";
 import { AddRecipeButton } from "./add-recipe-button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, UtensilsCrossed, X } from "lucide-react";
+import { Search, UtensilsCrossed, X, LayoutGrid, List } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const staggerContainer = {
   hidden: {},
@@ -26,6 +27,7 @@ interface RecipeListProps {
 export function RecipeList({ recipes }: RecipeListProps) {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const allTags = Array.from(
     new Set(recipes.flatMap((r) => r.tags))
@@ -63,15 +65,38 @@ export function RecipeList({ recipes }: RecipeListProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search recipes, ingredients..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+      {/* Sticky search/filter bar */}
+      <div className="sticky top-14 z-10 -mx-4 bg-background/80 px-4 py-3 backdrop-blur-lg sm:-mx-6 sm:px-6 md:top-0">
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search recipes, ingredients..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="flex rounded-lg border border-white/[0.06] bg-card p-0.5">
+            <Button
+              variant={viewMode === "grid" ? "secondary" : "ghost"}
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setViewMode("grid")}
+              aria-label="Grid view"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === "list" ? "secondary" : "ghost"}
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setViewMode("list")}
+              aria-label="List view"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -101,15 +126,19 @@ export function RecipeList({ recipes }: RecipeListProps) {
       )}
 
       <motion.div
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        className={viewMode === "grid" ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3" : "space-y-3"}
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        key={search + activeTag}
+        key={search + activeTag + viewMode}
       >
         {filtered.map((recipe) => (
-          <motion.div key={recipe.id} variants={staggerItem}>
-            <RecipeCard recipe={recipe} />
+          <motion.div
+            key={recipe.id}
+            variants={staggerItem}
+            className={viewMode === "grid" && recipe.is_favorite ? "sm:col-span-2" : ""}
+          >
+            <RecipeCard recipe={recipe} layout={viewMode} />
           </motion.div>
         ))}
       </motion.div>

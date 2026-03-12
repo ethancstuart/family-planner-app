@@ -73,6 +73,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
       cook_time_minutes: cookTime ? parseInt(cookTime) : null,
       servings: servings ? parseInt(servings) : null,
       source_type: "manual",
+      image_url: null,
       created_by: user.id,
     });
 
