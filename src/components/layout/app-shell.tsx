@@ -24,16 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PageTransition } from "./page-transition";
 
-const mobileNavItems = [
-  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { href: "/recipes", label: "Recipes", icon: UtensilsCrossed },
-  { href: "/meal-planner", label: "Meals", icon: CalendarDays },
-  { href: "/calendar", label: "Calendar", icon: Calendar },
-  { href: "/grocery", label: "Grocery", icon: ShoppingCart },
-  { href: "/todos", label: "To-Do", icon: ListTodo },
-];
-
-const desktopNavItems = [
+const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/recipes", label: "Recipes", icon: UtensilsCrossed },
   { href: "/recipes/discover", label: "Discover", icon: Compass },
@@ -41,7 +32,15 @@ const desktopNavItems = [
   { href: "/grocery", label: "Grocery", icon: ShoppingCart },
   { href: "/calendar", label: "Calendar", icon: Calendar },
   { href: "/todos", label: "To-Do", icon: ListTodo },
-  { href: "/settings", label: "Settings", icon: Settings },
+];
+
+const mobileNavItems = [
+  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { href: "/recipes", label: "Recipes", icon: UtensilsCrossed },
+  { href: "/meal-planner", label: "Meals", icon: CalendarDays },
+  { href: "/calendar", label: "Calendar", icon: Calendar },
+  { href: "/grocery", label: "Grocery", icon: ShoppingCart },
+  { href: "/todos", label: "To-Do", icon: ListTodo },
 ];
 
 interface AppShellProps {
@@ -71,83 +70,93 @@ export function AppShell({ user, children }: AppShellProps) {
 
   return (
     <div className="min-h-screen pb-16 md:pb-0">
-      {/* Desktop sidebar */}
-      <aside className="glass fixed inset-y-0 left-0 z-50 hidden w-60 flex-col md:flex">
-        <div className="flex h-14 items-center gap-2.5 border-b border-white/[0.06] px-5">
-          <ChefHat className="h-5 w-5 text-primary" />
-          <span className="font-bold gradient-text">Family Planner</span>
-        </div>
+      {/* Desktop top nav */}
+      <header className="glass fixed top-0 z-50 hidden w-full md:block">
+        <div className="mx-auto flex h-14 max-w-7xl items-center gap-1 px-4">
+          {/* Logo */}
+          <Link href="/dashboard" className="mr-4 flex items-center gap-2">
+            <ChefHat className="h-5 w-5 text-primary" />
+            <span className="font-bold gradient-text">Family Planner</span>
+          </Link>
 
-        <nav className="flex-1 space-y-1 p-3">
-          {desktopNavItems.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href !== "/dashboard" && pathname.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-white/5 hover:text-foreground"
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-indicator"
-                    className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/15 to-accent/10"
-                    transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+          {/* Nav items */}
+          <nav className="flex items-center gap-0.5">
+            {navItems.map((item) => {
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "/dashboard" && pathname.startsWith(item.href));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="relative flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="topnav-indicator"
+                      className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/15 to-accent/10"
+                      transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+                    />
+                  )}
+                  {isActive && (
+                    <motion.div
+                      layoutId="topnav-bar"
+                      className="absolute inset-x-3 bottom-0 h-[2px] rounded-full bg-gradient-to-r from-primary to-accent"
+                      transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+                    />
+                  )}
+                  <item.icon
+                    className={`relative h-4 w-4 ${isActive ? "text-primary" : ""}`}
                   />
-                )}
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-bar"
-                    className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-gradient-to-b from-primary to-accent"
-                    transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
-                  />
-                )}
-                <item.icon
-                  className={`relative h-4 w-4 ${isActive ? "text-primary drop-shadow-[0_0_6px_oklch(0.72_0.19_25/0.5)]" : ""}`}
-                />
-                <span className={`relative ${isActive ? "font-medium text-foreground" : ""}`}>
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-        </nav>
+                  <span className={`relative ${isActive ? "font-medium text-foreground" : ""}`}>
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
 
-        <div className="border-t border-white/[0.06] p-3 space-y-2">
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
-          >
-            <Sun className="h-4 w-4 dark:hidden" />
-            <Moon className="hidden h-4 w-4 dark:block" />
-            <span className="dark:hidden">Dark mode</span>
-            <span className="hidden dark:inline">Light mode</span>
-          </button>
-          <div className="glass-subtle flex items-center gap-3 rounded-lg px-3 py-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user.user_metadata?.avatar_url} />
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/10 text-xs font-medium text-primary">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">
-                {user.user_metadata?.full_name ?? user.email}
-              </p>
-            </div>
+          {/* Right side: settings, theme, avatar */}
+          <div className="ml-auto flex items-center gap-1">
+            <Link
+              href="/settings"
+              className={`relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+                pathname === "/settings" ? "text-primary" : "text-muted-foreground"
+              }`}
+              aria-label="Settings"
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
             <Button
               variant="ghost"
               size="icon"
-              onClick={handleSignOut}
-              className="h-8 w-8 shrink-0"
-              aria-label="Sign out"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="h-9 w-9"
+              aria-label="Toggle theme"
             >
-              <LogOut className="h-4 w-4" />
+              <Sun className="h-4 w-4 dark:hidden" />
+              <Moon className="hidden h-4 w-4 dark:block" />
             </Button>
+            <div className="ml-1 flex items-center gap-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user.user_metadata?.avatar_url} />
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/10 text-xs font-medium text-primary">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleSignOut}
+                className="h-8 w-8 shrink-0"
+                aria-label="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
-      </aside>
+      </header>
 
       {/* Mobile top bar */}
       <header className="glass fixed top-0 z-50 flex h-14 w-full items-center justify-between px-4 md:hidden">
@@ -217,9 +226,9 @@ export function AppShell({ user, children }: AppShellProps) {
         })}
       </nav>
 
-      {/* Main content */}
-      <main className="pt-14 md:pt-0 md:pl-60">
-        <div className="mx-auto max-w-6xl p-4 sm:p-6">
+      {/* Main content — full width, no sidebar offset */}
+      <main className="pt-14">
+        <div className="mx-auto max-w-7xl p-4 sm:p-6">
           <PageTransition key={pathname}>{children}</PageTransition>
         </div>
       </main>

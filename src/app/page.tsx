@@ -29,7 +29,7 @@ export default async function Home() {
     <div className="min-h-screen">
       {/* Nav */}
       <nav className="glass fixed top-0 z-50 w-full border-b border-white/[0.06]">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2">
             <ChefHat className="h-6 w-6 text-primary" />
             <span className="text-lg font-bold gradient-text">Family Planner</span>
@@ -39,7 +39,7 @@ export default async function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="relative mx-auto max-w-5xl px-6 pt-28 pb-16 sm:pt-36 sm:pb-24">
+      <section className="relative mx-auto max-w-6xl px-6 pt-28 pb-16 sm:pt-36 sm:pb-24">
         {/* Radial gradient background — multi-stop coral + violet */}
         <div className="pointer-events-none absolute inset-0 -top-20 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.72_0.19_25/0.15),oklch(0.72_0.16_280/0.08),transparent)]" />
 
@@ -100,7 +100,7 @@ export default async function Home() {
       {/* How it works — the killer feature */}
       <ScrollReveal>
         <section className="border-y border-white/[0.06] bg-muted/30 py-16 sm:py-24">
-          <div className="mx-auto max-w-5xl px-6">
+          <div className="mx-auto max-w-6xl px-6">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
                 From TikTok to dinner table in 3 steps
@@ -154,7 +154,7 @@ export default async function Home() {
       {/* Import methods */}
       <ScrollReveal>
         <section className="py-16 sm:py-24">
-          <div className="mx-auto max-w-5xl px-6">
+          <div className="mx-auto max-w-6xl px-6">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
                 4 ways to save a recipe
@@ -205,7 +205,7 @@ export default async function Home() {
       {/* Features grid */}
       <ScrollReveal>
         <section className="border-y border-white/[0.06] bg-muted/30 py-16 sm:py-24">
-          <div className="mx-auto max-w-5xl px-6">
+          <div className="mx-auto max-w-6xl px-6">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
                 Everything your family needs
@@ -272,7 +272,7 @@ export default async function Home() {
       {/* CTA */}
       <section className="relative py-16 sm:py-24 overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_50%,oklch(0.72_0.19_25/0.15),oklch(0.72_0.16_280/0.08),transparent)]" />
-        <div className="relative mx-auto max-w-5xl px-6 text-center">
+        <div className="relative mx-auto max-w-6xl px-6 text-center">
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Ready to organize your family&apos;s meals?
           </h2>
@@ -287,7 +287,7 @@ export default async function Home() {
 
       {/* Footer */}
       <footer className="border-t border-white/[0.06] py-8">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-2 px-6 text-center text-sm text-muted-foreground">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-6 text-center text-sm text-muted-foreground">
           <p>
             Open source on{" "}
             <a
