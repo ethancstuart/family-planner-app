@@ -32,7 +32,7 @@ export function CalendarWeekView({
         return (
           <div
             key={i}
-            className="min-w-[140px] flex-shrink-0 md:min-w-0"
+            className="glass-subtle min-w-[140px] flex-shrink-0 rounded-xl p-1.5 md:min-w-0"
           >
             <div
               className={cn(

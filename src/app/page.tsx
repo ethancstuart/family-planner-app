@@ -28,11 +28,11 @@ export default async function Home() {
   return (
     <div className="min-h-screen">
       {/* Nav */}
-      <nav className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
+      <nav className="glass fixed top-0 z-50 w-full border-b border-white/[0.06]">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
           <div className="flex items-center gap-2">
             <ChefHat className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">Family Planner</span>
+            <span className="text-lg font-bold gradient-text">Family Planner</span>
           </div>
           <LoginButton variant="outline" size="sm" />
         </div>
@@ -40,8 +40,8 @@ export default async function Home() {
 
       {/* Hero */}
       <section className="relative mx-auto max-w-5xl px-6 pt-28 pb-16 sm:pt-36 sm:pb-24">
-        {/* Radial gradient background */}
-        <div className="pointer-events-none absolute inset-0 -top-20 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.55_0.18_38/0.12),transparent)]" />
+        {/* Radial gradient background — multi-stop coral + violet */}
+        <div className="pointer-events-none absolute inset-0 -top-20 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.72_0.19_25/0.15),oklch(0.72_0.16_280/0.08),transparent)]" />
 
         <HeroAnimations>
           <div className="relative mx-auto max-w-2xl text-center">
@@ -51,7 +51,7 @@ export default async function Home() {
             </div>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               Your family&apos;s recipes,{" "}
-              <span className="text-primary">finally organized</span>
+              <span className="gradient-text">finally organized</span>
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground sm:text-xl">
               Paste a TikTok link and get a structured recipe in seconds. Plan
@@ -69,11 +69,11 @@ export default async function Home() {
           {/* Browser mockup */}
           <div className="relative mx-auto mt-16 max-w-3xl" style={{ perspective: "1200px" }}>
             <div
-              className="overflow-hidden rounded-xl border border-border bg-card shadow-2xl dark:shadow-black/40"
+              className="surface-glow overflow-hidden rounded-xl border border-white/[0.06] bg-card"
               style={{ transform: "rotateX(4deg)" }}
             >
               {/* Title bar */}
-              <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-4 py-2.5">
+              <div className="flex items-center gap-2 border-b border-white/[0.06] bg-muted/50 px-4 py-2.5">
                 <div className="flex gap-1.5">
                   <div className="h-3 w-3 rounded-full bg-red-400/60" />
                   <div className="h-3 w-3 rounded-full bg-yellow-400/60" />
@@ -86,16 +86,16 @@ export default async function Home() {
               {/* Fake dashboard content */}
               <div className="p-6">
                 <div className="mb-4 flex items-center gap-2">
-                  <div className="h-6 w-6 rounded-full bg-primary/20" />
+                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-primary/30 to-accent/20" />
                   <div className="h-4 w-28 rounded bg-foreground/10" />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   {["Recipe Vault", "Meal Plan", "Grocery List"].map((label) => (
                     <div
                       key={label}
-                      className="rounded-lg border border-border bg-muted/30 p-3"
+                      className="rounded-lg border border-white/[0.06] bg-muted/30 p-3"
                     >
-                      <div className="mb-2 h-3 w-3 rounded bg-primary/30" />
+                      <div className="mb-2 h-3 w-3 rounded bg-gradient-to-br from-primary/40 to-accent/20" />
                       <div className="h-3 w-16 rounded bg-foreground/8" />
                       <div className="mt-1 h-2 w-12 rounded bg-foreground/5" />
                     </div>
@@ -105,9 +105,9 @@ export default async function Home() {
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="rounded-lg border border-border bg-muted/30 p-3"
+                      className="rounded-lg border border-white/[0.06] bg-muted/30 p-3"
                     >
-                      <div className="mb-2 h-6 w-full rounded bg-primary/10" />
+                      <div className="mb-2 h-6 w-full rounded bg-gradient-to-r from-primary/10 to-accent/5" />
                       <div className="h-2 w-full rounded bg-foreground/5" />
                       <div className="mt-1 h-2 w-2/3 rounded bg-foreground/5" />
                     </div>
@@ -121,7 +121,7 @@ export default async function Home() {
 
       {/* How it works — the killer feature */}
       <ScrollReveal>
-        <section className="border-y border-border bg-muted/30 py-16 sm:py-24">
+        <section className="border-y border-white/[0.06] bg-muted/30 py-16 sm:py-24">
           <div className="mx-auto max-w-5xl px-6">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -155,10 +155,10 @@ export default async function Home() {
               ].map((item, i) => (
                 <StaggerItem key={item.step} index={i}>
                   <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/15 to-accent/10 text-primary">
                       <item.icon className="h-5 w-5" />
                     </div>
-                    <div className="mb-2 text-xs font-bold uppercase tracking-widest text-primary">
+                    <div className="mb-2 text-xs font-bold uppercase tracking-widest gradient-text">
                       Step {item.step}
                     </div>
                     <h3 className="text-lg font-semibold">{item.title}</h3>
@@ -210,7 +210,7 @@ export default async function Home() {
                 },
               ].map((item, i) => (
                 <StaggerItem key={item.title} index={i}>
-                  <div className="rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/30 hover:shadow-sm hover:-translate-y-0.5">
+                  <div className="rounded-xl border border-white/[0.06] border-t-2 border-t-primary/40 bg-card p-6 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5">
                     <item.icon className="mb-3 h-6 w-6 text-primary" />
                     <h3 className="font-semibold">{item.title}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -226,7 +226,7 @@ export default async function Home() {
 
       {/* Features grid */}
       <ScrollReveal>
-        <section className="border-y border-border bg-muted/30 py-16 sm:py-24">
+        <section className="border-y border-white/[0.06] bg-muted/30 py-16 sm:py-24">
           <div className="mx-auto max-w-5xl px-6">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -262,8 +262,8 @@ export default async function Home() {
                 },
               ].map((item, i) => (
                 <StaggerItem key={item.title} index={i}>
-                  <div className="flex gap-4 rounded-xl border border-border bg-card p-6 transition-all hover:-translate-y-0.5 hover:shadow-sm">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <div className="flex gap-4 rounded-xl border border-white/[0.06] bg-card p-6 surface-raised transition-all hover:-translate-y-0.5 hover:surface-glow">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
                       <item.icon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
@@ -272,7 +272,7 @@ export default async function Home() {
                         <span
                           className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
                             item.status === "Live"
-                              ? "bg-accent/10 text-accent"
+                              ? "bg-gradient-to-r from-primary/15 to-accent/10 text-primary"
                               : "bg-muted text-muted-foreground"
                           }`}
                         >
@@ -292,8 +292,9 @@ export default async function Home() {
       </ScrollReveal>
 
       {/* CTA */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-5xl px-6 text-center">
+      <section className="relative py-16 sm:py-24 overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,oklch(0.72_0.19_25/0.08),oklch(0.72_0.16_280/0.05),transparent)]" />
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Ready to organize your family&apos;s meals?
           </h2>
@@ -307,7 +308,7 @@ export default async function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8">
+      <footer className="border-t border-white/[0.06] py-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-2 px-6 text-center text-sm text-muted-foreground">
           <p>
             Open source on{" "}

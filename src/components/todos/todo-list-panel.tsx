@@ -124,7 +124,8 @@ export function TodoListPanel({
   const completed = localItems.filter((i) => i.completed);
 
   return (
-    <div className="rounded-xl border border-border bg-card">
+    <div className="relative overflow-hidden rounded-xl border border-white/[0.06] bg-card surface-raised">
+      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-primary to-accent" />
       <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
       <button
         onClick={() => setOpen(!open)}
@@ -157,7 +158,7 @@ export function TodoListPanel({
       </button>
 
       {open && (
-        <div className="border-t border-border px-5 py-4 space-y-3">
+        <div className="border-t border-white/[0.06] px-5 py-4 space-y-3">
           <AddTodoInput onAdd={handleAddItem} />
 
           <div className="space-y-1">

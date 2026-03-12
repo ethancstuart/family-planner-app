@@ -22,7 +22,7 @@ export function ProgressBar({
     <div className={cn("flex items-center gap-3", className)}>
       <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-muted">
         <motion.div
-          className="absolute inset-y-0 left-0 rounded-full bg-primary"
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-accent"
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
           transition={{ duration: 0.4, ease: "easeOut" }}

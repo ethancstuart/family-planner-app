@@ -74,10 +74,12 @@ export function SettingsForm({
       {/* Household */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Users className="h-5 w-5 text-muted-foreground" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
+            <Users className="h-4 w-4 text-primary" />
+          </div>
           <h2 className="text-lg font-semibold">Household</h2>
         </div>
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="glass rounded-xl p-5">
           <p className="text-lg font-semibold">{householdName}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             {members.length} member{members.length !== 1 ? "s" : ""}
@@ -119,7 +121,9 @@ export function SettingsForm({
       {/* Claude API Key */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-muted-foreground" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
+            <Shield className="h-4 w-4 text-primary" />
+          </div>
           <h2 className="text-lg font-semibold">Claude API Key</h2>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -170,7 +174,9 @@ export function SettingsForm({
       {/* Spoonacular API Key */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Compass className="h-5 w-5 text-muted-foreground" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
+            <Compass className="h-4 w-4 text-primary" />
+          </div>
           <h2 className="text-lg font-semibold">Spoonacular API Key</h2>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -239,7 +245,9 @@ export function SettingsForm({
       {/* Google Calendar */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-muted-foreground" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
+            <Calendar className="h-4 w-4 text-primary" />
+          </div>
           <h2 className="text-lg font-semibold">Google Calendar</h2>
         </div>
         <p className="text-sm text-muted-foreground">

@@ -134,7 +134,7 @@ export default async function DashboardPage() {
         {/* Greeting */}
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Hey, {firstName}
+            Hey, <span className="gradient-text">{firstName}</span>
           </h1>
           <p className="mt-1 text-muted-foreground">
             Here&apos;s what&apos;s happening in your kitchen.
@@ -143,7 +143,7 @@ export default async function DashboardPage() {
 
         {/* Setup checklist — only shows when incomplete */}
         {(!hasApiKey || recipeCount === 0) && (
-          <div className="rounded-xl border border-primary/20 border-l-4 border-l-primary bg-primary/5 p-6">
+          <div className="rounded-xl border border-primary/20 border-l-4 border-l-primary bg-gradient-to-r from-primary/8 to-accent/5 p-6">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Sparkles className="h-5 w-5 text-primary" />
               Get started
@@ -172,9 +172,9 @@ export default async function DashboardPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             href="/recipes"
-            className="group flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+            className="group flex items-center gap-4 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-accent/10">
               <UtensilsCrossed className="h-5 w-5 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
@@ -188,9 +188,9 @@ export default async function DashboardPage() {
 
           <Link
             href="/recipes"
-            className="group flex items-center gap-4 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 p-5 transition-all hover:border-primary/40 hover:shadow-md"
+            className="group flex items-center gap-4 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 to-accent/5 p-5 transition-all hover:border-primary/40 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-accent/10">
               <Plus className="h-5 w-5 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
@@ -203,9 +203,9 @@ export default async function DashboardPage() {
 
           <Link
             href="/settings"
-            className="group flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+            className="group flex items-center gap-4 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-muted to-muted/50">
               <Settings className="h-5 w-5 text-muted-foreground" />
             </div>
             <div className="min-w-0 flex-1">
@@ -223,8 +223,9 @@ export default async function DashboardPage() {
           {/* This Week's Meals */}
           <Link
             href="/meal-planner"
-            className="group flex flex-col gap-3 rounded-xl border border-border border-l-4 border-l-primary bg-card p-5 transition-all hover:border-primary/30 hover:border-l-primary hover:shadow-sm"
+            className="group flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
           >
+            <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-primary to-accent" />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-primary" />
@@ -255,8 +256,9 @@ export default async function DashboardPage() {
           {/* Active Grocery List */}
           <Link
             href={groceryList ? `/grocery/${groceryList.id}` : "/grocery"}
-            className="group flex flex-col gap-3 rounded-xl border border-border border-l-4 border-l-teal-500 bg-card p-5 transition-all hover:border-primary/30 hover:border-l-teal-500 hover:shadow-sm"
+            className="group relative flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
           >
+            <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-teal-400 to-cyan-500" />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShoppingCart className="h-4 w-4 text-primary" />
@@ -270,7 +272,7 @@ export default async function DashboardPage() {
               <div className="space-y-2">
                 <div className="relative h-2 overflow-hidden rounded-full bg-muted">
                   <div
-                    className="absolute inset-y-0 left-0 rounded-full bg-primary transition-all"
+                    className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-accent transition-all"
                     style={{
                       width: `${Math.round((groceryProgress.checked / groceryProgress.total) * 100)}%`,
                     }}
@@ -292,8 +294,9 @@ export default async function DashboardPage() {
           {/* Pending Tasks */}
           <Link
             href="/todos"
-            className="group flex flex-col gap-3 rounded-xl border border-border border-l-4 border-l-amber-500 bg-card p-5 transition-all hover:border-primary/30 hover:border-l-amber-500 hover:shadow-sm"
+            className="group relative flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
           >
+            <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-amber-400 to-orange-500" />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ListTodo className="h-4 w-4 text-primary" />
@@ -343,7 +346,7 @@ export default async function DashboardPage() {
                 <Link
                   key={recipe.id}
                   href={`/recipes/${recipe.id}`}
-                  className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 transition-all hover:border-primary/30"
+                  className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-card px-4 py-3 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
                 >
                   <ChefHat className="h-4 w-4 shrink-0 text-primary" />
                   <span className="truncate text-sm font-medium">
@@ -376,13 +379,13 @@ function SetupStep({
       className={`flex items-center gap-3 rounded-lg border px-4 py-3 transition-all ${
         done
           ? "border-accent/30 bg-accent/5"
-          : "border-border bg-card hover:border-primary/30"
+          : "border-white/[0.06] bg-card hover:border-primary/30"
       }`}
     >
       <div
         className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
           done
-            ? "bg-accent text-accent-foreground"
+            ? "bg-gradient-to-br from-primary to-accent text-primary-foreground"
             : "border-2 border-primary/30 text-primary"
         }`}
       >

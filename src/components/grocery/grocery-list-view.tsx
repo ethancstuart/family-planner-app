@@ -170,7 +170,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
   if (shoppingMode) {
     return (
       <div className="fixed inset-0 z-50 bg-background">
-        <div className="sticky top-0 z-10 border-b border-border bg-card/95 px-4 py-3 backdrop-blur-md">
+        <div className="glass sticky top-0 z-10 border-b border-white/[0.06] px-4 py-3">
           <div className="mx-auto max-w-lg">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">{list.title}</h2>

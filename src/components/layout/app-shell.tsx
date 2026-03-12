@@ -72,10 +72,10 @@ export function AppShell({ user, children }: AppShellProps) {
   return (
     <div className="min-h-screen pb-16 md:pb-0">
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-border bg-card md:flex">
-        <div className="flex h-14 items-center gap-2.5 border-b border-border px-5">
+      <aside className="glass fixed inset-y-0 left-0 z-50 hidden w-60 flex-col border-r border-white/[0.06] md:flex">
+        <div className="flex h-14 items-center gap-2.5 border-b border-white/[0.06] px-5">
           <ChefHat className="h-5 w-5 text-primary" />
-          <span className="font-bold">Family Planner</span>
+          <span className="font-bold gradient-text">Family Planner</span>
         </div>
 
         <nav className="flex-1 space-y-1 p-3">
@@ -87,17 +87,26 @@ export function AppShell({ user, children }: AppShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-white/5 hover:text-foreground"
               >
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-indicator"
-                    className="absolute inset-0 rounded-lg bg-primary/10"
+                    className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/15 to-accent/10"
                     transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
                   />
                 )}
-                <item.icon className={`relative h-4 w-4 ${isActive ? "text-primary" : ""}`} />
-                <span className={`relative ${isActive ? "font-medium text-primary" : ""}`}>
+                {isActive && (
+                  <motion.div
+                    layoutId="sidebar-bar"
+                    className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-gradient-to-b from-primary to-accent"
+                    transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+                  />
+                )}
+                <item.icon
+                  className={`relative h-4 w-4 ${isActive ? "text-primary drop-shadow-[0_0_6px_oklch(0.72_0.19_25/0.5)]" : ""}`}
+                />
+                <span className={`relative ${isActive ? "font-medium text-foreground" : ""}`}>
                   {item.label}
                 </span>
               </Link>
@@ -105,20 +114,20 @@ export function AppShell({ user, children }: AppShellProps) {
           })}
         </nav>
 
-        <div className="border-t border-border p-3 space-y-2">
+        <div className="border-t border-white/[0.06] p-3 space-y-2">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
           >
             <Sun className="h-4 w-4 dark:hidden" />
             <Moon className="hidden h-4 w-4 dark:block" />
             <span className="dark:hidden">Dark mode</span>
             <span className="hidden dark:inline">Light mode</span>
           </button>
-          <div className="flex items-center gap-3 rounded-lg px-3 py-2">
+          <div className="glass-subtle flex items-center gap-3 rounded-lg px-3 py-2">
             <Avatar className="h-8 w-8">
               <AvatarImage src={user.user_metadata?.avatar_url} />
-              <AvatarFallback className="bg-primary/10 text-xs font-medium text-primary">
+              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/10 text-xs font-medium text-primary">
                 {initials}
               </AvatarFallback>
             </Avatar>
@@ -141,10 +150,10 @@ export function AppShell({ user, children }: AppShellProps) {
       </aside>
 
       {/* Mobile top bar */}
-      <header className="fixed top-0 z-50 flex h-14 w-full items-center justify-between border-b border-border bg-card/80 px-4 backdrop-blur-md md:hidden">
+      <header className="glass fixed top-0 z-50 flex h-14 w-full items-center justify-between border-b border-white/[0.06] px-4 md:hidden">
         <div className="flex items-center gap-2">
           <ChefHat className="h-5 w-5 text-primary" />
-          <span className="font-bold">Family Planner</span>
+          <span className="font-bold gradient-text">Family Planner</span>
         </div>
         <div className="flex items-center gap-1">
           <Button
@@ -159,7 +168,7 @@ export function AppShell({ user, children }: AppShellProps) {
           </Button>
           <Link
             href="/settings"
-            className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-muted"
+            className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5"
             aria-label="Settings"
           >
             <Settings className="h-4 w-4" />
@@ -177,7 +186,7 @@ export function AppShell({ user, children }: AppShellProps) {
       </header>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 z-50 flex w-full items-center justify-around border-t border-border bg-card/95 backdrop-blur-md md:hidden">
+      <nav className="glass fixed bottom-0 z-50 flex w-full items-center justify-around border-t border-white/[0.06] md:hidden">
         {mobileNavItems.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -188,15 +197,20 @@ export function AppShell({ user, children }: AppShellProps) {
                 href={item.href}
                 className="relative flex flex-col items-center gap-1 py-3 text-[10px] font-medium transition-colors text-muted-foreground"
               >
-                <item.icon className={`h-5 w-5 ${isActive ? "text-primary" : ""}`} />
-                <span className={isActive ? "text-primary" : ""}>{item.label}</span>
                 {isActive && (
                   <motion.div
                     layoutId="bottom-indicator"
-                    className="absolute -bottom-0 h-0.5 w-6 rounded-full bg-primary"
+                    className="absolute inset-x-2 top-1.5 bottom-1.5 rounded-xl bg-gradient-to-b from-primary/15 to-accent/10"
                     transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
                   />
                 )}
+                <motion.div
+                  animate={isActive ? { scale: 1.15 } : { scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <item.icon className={`relative h-5 w-5 ${isActive ? "text-primary drop-shadow-[0_0_6px_oklch(0.72_0.19_25/0.5)]" : ""}`} />
+                </motion.div>
+                <span className={`relative ${isActive ? "text-primary" : ""}`}>{item.label}</span>
               </Link>
             </motion.div>
           );

@@ -14,12 +14,12 @@ const sourceIcons: Record<string, typeof PenLine> = {
 };
 
 const gradientColors = [
-  "from-orange-500/20 to-amber-500/10",
-  "from-rose-500/20 to-pink-500/10",
-  "from-blue-500/20 to-indigo-500/10",
-  "from-emerald-500/20 to-teal-500/10",
-  "from-violet-500/20 to-purple-500/10",
-  "from-cyan-500/20 to-sky-500/10",
+  "from-rose-500/25 to-pink-500/10",
+  "from-violet-500/25 to-purple-500/10",
+  "from-blue-500/25 to-indigo-500/10",
+  "from-emerald-500/25 to-teal-500/10",
+  "from-orange-500/25 to-amber-500/10",
+  "from-cyan-500/25 to-sky-500/10",
 ];
 
 function getGradient(recipe: Recipe) {
@@ -43,10 +43,11 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   return (
     <Link
       href={`/recipes/${recipe.id}`}
-      className="group flex flex-col rounded-xl border border-border bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5"
+      className="group flex flex-col rounded-xl border border-white/[0.06] bg-card surface-raised transition-all hover:surface-elevated hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
     >
-      {/* Gradient header */}
-      <div className={`relative h-10 rounded-t-xl bg-gradient-to-r ${gradient}`}>
+      {/* Gradient header — taller with soft fade */}
+      <div className={`relative h-12 rounded-t-xl bg-gradient-to-r ${gradient}`}>
+        <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-card to-transparent" />
         {recipe.is_favorite && (
           <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-card/90 shadow-sm">
             <Heart className="h-3.5 w-3.5 fill-red-500 text-red-500" />
@@ -54,9 +55,9 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5 pt-3">
+      <div className="flex flex-1 flex-col p-5 pt-1">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold leading-snug group-hover:text-primary">
+          <h3 className="font-semibold leading-snug group-hover:text-primary transition-colors">
             {recipe.title}
           </h3>
           <SourceIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -90,7 +91,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           {recipe.tags.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {recipe.tags.slice(0, 3).map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-[10px] px-2 py-0">
+                <Badge key={tag} variant="glow" className="text-[10px] px-2 py-0">
                   {tag}
                 </Badge>
               ))}

@@ -74,11 +74,11 @@ export function GroceryListIndex({
             <Link
               key={list.id}
               href={`/grocery/${list.id}`}
-              className="group flex flex-col gap-3 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
+              className="group flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-accent/10">
                     <ShoppingCart className="h-5 w-5 text-primary" />
                   </div>
                   <div>
