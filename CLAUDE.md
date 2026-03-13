@@ -77,6 +77,17 @@ supabase/
 - Phase 4: Calendar Hub (Google Calendar)
 - Phase 5: Family To-Do + SaaS Polish
 
+## Shared Context — home-base
+This project is part of a portfolio managed from ~/Projects/home-base.
+Before planning features or making architectural decisions, reference:
+- `~/Projects/home-base/registry.md` — project registry, status, and cross-project alignment
+- `~/Projects/home-base/apis/catalog.md` — curated API catalog (food, nutrition, recipe APIs)
+- `~/Projects/home-base/standards/quality.md` — shared quality standards
+- `~/Projects/home-base/standards/design-principles.md` — shared design philosophy
+- `~/Projects/home-base/personal/CLAUDE.local.md` — who Ethan is, how he works
+
+When planning new features, check the API catalog for food/nutrition/recipe integrations.
+
 ## Important Notes
 - `.env.local` is gitignored — copy `.env.example` and add Supabase keys
 - `CLAUDE.local.md` is gitignored — personal context
