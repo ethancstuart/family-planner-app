@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const calendar = await getCalendarClient(user.id);
+    const { accessToken } = await getCalendarClient(user.id);
     const weekStart = parseDate(week_start_date);
     let synced = 0;
 
@@ -91,15 +91,27 @@ export async function POST(request: NextRequest) {
         ? `Ingredients: ${ingredients}...`
         : undefined;
 
-      await calendar.events.insert({
-        calendarId: "primary",
-        requestBody: {
-          summary: `${mealConfig.label}: ${recipe.title}`,
-          description,
-          start: { dateTime: eventDate.toISOString() },
-          end: { dateTime: endDate.toISOString() },
-        },
-      });
+      const res = await fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            summary: `${mealConfig.label}: ${recipe.title}`,
+            description,
+            start: { dateTime: eventDate.toISOString() },
+            end: { dateTime: endDate.toISOString() },
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Failed to insert event: ${err}`);
+      }
 
       synced++;
     }

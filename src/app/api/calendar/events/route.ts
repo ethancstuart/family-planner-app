@@ -24,28 +24,47 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const calendar = await getCalendarClient(user.id);
+    const { accessToken } = await getCalendarClient(user.id);
 
-    const { data } = await calendar.events.list({
-      calendarId: "primary",
+    const params = new URLSearchParams({
       timeMin: new Date(start).toISOString(),
       timeMax: new Date(end).toISOString(),
-      singleEvents: true,
+      singleEvents: "true",
       orderBy: "startTime",
-      maxResults: 100,
+      maxResults: "100",
     });
 
-    const events = (data.items ?? []).map((event) => {
-      const isAllDay = !event.start?.dateTime;
-      return {
-        id: event.id,
-        title: event.summary ?? "(No title)",
-        start: event.start?.dateTime ?? event.start?.date ?? "",
-        end: event.end?.dateTime ?? event.end?.date ?? "",
-        allDay: isAllDay,
-        color: event.colorId ?? undefined,
-      };
-    });
+    const res = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?${params.toString()}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Google Calendar API error: ${err}`);
+    }
+
+    const data = await res.json();
+
+    const events = (data.items ?? []).map(
+      (event: {
+        id?: string;
+        summary?: string;
+        start?: { dateTime?: string; date?: string };
+        end?: { dateTime?: string; date?: string };
+        colorId?: string;
+      }) => {
+        const isAllDay = !event.start?.dateTime;
+        return {
+          id: event.id,
+          title: event.summary ?? "(No title)",
+          start: event.start?.dateTime ?? event.start?.date ?? "",
+          end: event.end?.dateTime ?? event.end?.date ?? "",
+          allDay: isAllDay,
+          color: event.colorId ?? undefined,
+        };
+      }
+    );
 
     return NextResponse.json({ events });
   } catch (error) {

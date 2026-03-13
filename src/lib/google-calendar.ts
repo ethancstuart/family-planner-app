@@ -1,35 +1,58 @@
-import { google, calendar_v3 } from "googleapis";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const SCOPES = ["https://www.googleapis.com/auth/calendar.events"];
 
-export function getOAuth2Client() {
-  return new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET
-  );
+interface TokenResponse {
+  access_token: string;
+  refresh_token?: string;
+  expires_in: number;
+  token_type: string;
 }
 
 export function getAuthUrl(redirectUri: string, state: string): string {
-  const client = getOAuth2Client();
-  return client.generateAuthUrl({
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID!,
+    redirect_uri: redirectUri,
+    response_type: "code",
+    scope: SCOPES.join(" "),
     access_type: "offline",
     prompt: "consent",
-    scope: SCOPES,
-    redirect_uri: redirectUri,
     state,
   });
+
+  return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 }
 
 export async function exchangeCode(code: string, redirectUri: string) {
-  const client = getOAuth2Client();
-  const { tokens } = await client.getToken({ code, redirect_uri: redirectUri });
-  return tokens;
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: redirectUri,
+      grant_type: "authorization_code",
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Token exchange failed: ${err}`);
+  }
+
+  const tokens: TokenResponse = await res.json();
+
+  return {
+    access_token: tokens.access_token,
+    refresh_token: tokens.refresh_token ?? null,
+    expiry_date: Date.now() + tokens.expires_in * 1000,
+  };
 }
 
 export async function getCalendarClient(
   userId: string
-): Promise<calendar_v3.Calendar> {
+): Promise<{ accessToken: string }> {
   const supabase = createAdminClient();
 
   const { data: connection, error } = await supabase
@@ -44,13 +67,7 @@ export async function getCalendarClient(
 
   const refreshed = await refreshTokenIfNeeded(connection);
 
-  const client = getOAuth2Client();
-  client.setCredentials({
-    access_token: refreshed.access_token,
-    refresh_token: refreshed.refresh_token,
-  });
-
-  return google.calendar({ version: "v3", auth: client });
+  return { accessToken: refreshed.access_token };
 }
 
 async function refreshTokenIfNeeded(connection: {
@@ -67,27 +84,40 @@ async function refreshTokenIfNeeded(connection: {
     return connection;
   }
 
-  const client = getOAuth2Client();
-  client.setCredentials({ refresh_token: connection.refresh_token });
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      refresh_token: connection.refresh_token,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      grant_type: "refresh_token",
+    }),
+  });
 
-  const { credentials } = await client.refreshAccessToken();
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Token refresh failed: ${err}`);
+  }
 
-  const newExpiresAt = credentials.expiry_date
-    ? new Date(credentials.expiry_date).toISOString()
-    : new Date(Date.now() + 3600 * 1000).toISOString();
+  const tokens: TokenResponse = await res.json();
+
+  const newExpiresAt = new Date(
+    Date.now() + tokens.expires_in * 1000
+  ).toISOString();
 
   const supabase = createAdminClient();
   await supabase
     .from("calendar_connections")
     .update({
-      access_token: credentials.access_token!,
+      access_token: tokens.access_token,
       expires_at: newExpiresAt,
     })
     .eq("id", connection.id);
 
   return {
     ...connection,
-    access_token: credentials.access_token!,
+    access_token: tokens.access_token,
     expires_at: newExpiresAt,
   };
 }
