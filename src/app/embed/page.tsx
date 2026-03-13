@@ -97,7 +97,7 @@ export default function EmbedPage() {
                     <div
                       className={`flex h-3 w-3 shrink-0 items-center justify-center rounded-sm ${
                         item.checked
-                          ? "bg-teal-500 text-white"
+                          ? "bg-teal-500 text-primary-foreground"
                           : "border border-muted-foreground/30"
                       }`}
                     >
@@ -128,7 +128,7 @@ export default function EmbedPage() {
               {DEMO_TODOS.map((todo, i) => (
                 <div key={i} className="flex items-center gap-1.5">
                   {todo.done ? (
-                    <div className="flex h-3 w-3 shrink-0 items-center justify-center rounded-full bg-amber-500 text-white">
+                    <div className="flex h-3 w-3 shrink-0 items-center justify-center rounded-full bg-amber-500 text-primary-foreground">
                       <Check className="h-2 w-2" />
                     </div>
                   ) : (
