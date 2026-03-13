@@ -66,7 +66,7 @@ export function RecipeList({ recipes }: RecipeListProps) {
   return (
     <div className="space-y-4">
       {/* Sticky search/filter bar */}
-      <div className="sticky top-14 z-10 -mx-4 bg-background/80 px-4 py-3 backdrop-blur-lg sm:-mx-6 sm:px-6">
+      <div className="sticky top-14 z-10 -mx-4 bg-background/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
         <div className="flex items-center gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -77,7 +77,7 @@ export function RecipeList({ recipes }: RecipeListProps) {
               className="pl-9"
             />
           </div>
-          <div className="flex rounded-lg border border-white/[0.06] bg-card p-0.5">
+          <div className="flex rounded-lg border border-border bg-card p-0.5">
             <Button
               variant={viewMode === "grid" ? "secondary" : "ghost"}
               size="icon"

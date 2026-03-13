@@ -112,7 +112,7 @@ export default async function DashboardPage() {
   }
 
   // Fetch grocery item counts
-  let groceryProgress = { total: 0, checked: 0 };
+  const groceryProgress = { total: 0, checked: 0 };
   const groceryList = groceryResult.data;
   if (groceryList) {
     const { data: gItems } = await supabase
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
         {/* Greeting hero */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Hey, <span className="gradient-text">{firstName}</span>
+            Hey, <span className="text-primary">{firstName}</span>
           </h1>
           <p className="mt-1 text-muted-foreground">
             Here&apos;s what&apos;s happening in your kitchen.
@@ -149,7 +149,7 @@ export default async function DashboardPage() {
 
         {/* Setup checklist — only shows when incomplete */}
         {(!hasApiKey || recipeCount === 0) && (
-          <div className="rounded-xl border border-primary/20 border-l-4 border-l-primary bg-gradient-to-r from-primary/8 to-accent/5 p-6">
+          <div className="rounded-xl border border-primary/20 border-l-4 border-l-primary bg-primary/5 p-6">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Sparkles className="h-5 w-5 text-primary" />
               Get started
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/recipes"
-                className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-card px-4 py-2 text-sm font-medium surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary"
               >
                 <UtensilsCrossed className="h-4 w-4 text-primary" />
                 Recipes
@@ -190,21 +190,21 @@ export default async function DashboardPage() {
               </Link>
               <Link
                 href="/recipes"
-                className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/5 px-4 py-2 text-sm font-medium text-primary transition-all hover:border-primary/40 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-primary/40"
               >
                 <Plus className="h-4 w-4" />
                 Add Recipe
               </Link>
               <Link
                 href="/meal-planner"
-                className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-card px-4 py-2 text-sm font-medium surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary"
               >
                 <CalendarDays className="h-4 w-4 text-primary" />
                 Meal Plan
               </Link>
               <Link
                 href="/settings"
-                className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-card px-4 py-2 text-sm font-medium surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary"
               >
                 <Settings className="h-4 w-4 text-muted-foreground" />
                 Settings
@@ -213,7 +213,7 @@ export default async function DashboardPage() {
 
             {/* Week meal strip */}
             <Link href="/meal-planner" className="group block">
-              <div className="rounded-xl border border-white/[0.06] bg-card p-4 surface-raised transition-all hover:surface-glow">
+              <div className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CalendarDays className="h-4 w-4 text-primary" />
@@ -267,7 +267,7 @@ export default async function DashboardPage() {
                     <Link
                       key={recipe.id}
                       href={`/recipes/${recipe.id}`}
-                      className="flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.06] bg-card px-4 py-2.5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+                      className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 transition-colors hover:border-primary"
                     >
                       <ChefHat className="h-4 w-4 shrink-0 text-primary" />
                       <span className="whitespace-nowrap text-sm font-medium">
@@ -285,9 +285,9 @@ export default async function DashboardPage() {
             {/* Grocery progress widget */}
             <Link
               href={groceryList ? `/grocery/${groceryList.id}` : "/grocery"}
-              className="group relative block rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+              className="group relative block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary"
             >
-              <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-teal-400 to-cyan-500" />
+              <div className="absolute left-0 top-3 bottom-3 w-0.5 rounded-r-full bg-primary" />
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShoppingCart className="h-4 w-4 text-primary" />
@@ -301,7 +301,7 @@ export default async function DashboardPage() {
                 <div className="mt-3 space-y-2">
                   <div className="relative h-2 overflow-hidden rounded-full bg-muted">
                     <div
-                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-accent transition-all"
+                      className="absolute inset-y-0 left-0 rounded-full bg-primary transition-all"
                       style={{
                         width: `${Math.round((groceryProgress.checked / groceryProgress.total) * 100)}%`,
                       }}
@@ -323,9 +323,9 @@ export default async function DashboardPage() {
             {/* Pending tasks widget */}
             <Link
               href="/todos"
-              className="group relative block rounded-xl border border-white/[0.06] bg-card p-5 surface-raised transition-all hover:surface-glow hover:-translate-y-0.5"
+              className="group relative block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary"
             >
-              <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-gradient-to-b from-amber-400 to-orange-500" />
+              <div className="absolute left-0 top-3 bottom-3 w-0.5 rounded-r-full bg-primary" />
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ListTodo className="h-4 w-4 text-primary" />
@@ -380,13 +380,13 @@ function SetupStep({
       className={`flex items-center gap-3 rounded-lg border px-4 py-3 transition-all ${
         done
           ? "border-accent/30 bg-accent/5"
-          : "border-white/[0.06] bg-card hover:border-primary/30"
+          : "border-border bg-card hover:border-primary/30"
       }`}
     >
       <div
         className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
           done
-            ? "bg-gradient-to-br from-primary to-accent text-primary-foreground"
+            ? "bg-primary text-primary-foreground"
             : "border-2 border-primary/30 text-primary"
         }`}
       >

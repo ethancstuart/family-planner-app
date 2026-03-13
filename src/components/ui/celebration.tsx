@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useMemo } from "react";
+import { motion, AnimatePresence, useAnimate } from "framer-motion";
 
 interface Particle {
   id: number;
@@ -10,6 +10,10 @@ interface Particle {
   color: string;
   size: number;
   rotation: number;
+  targetX: number;
+  targetY: number;
+  duration: number;
+  borderRadius: string;
 }
 
 const colors = [
@@ -23,14 +27,21 @@ const colors = [
 ];
 
 function generateParticles(count: number): Particle[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: i,
-    x: 50 + (Math.random() - 0.5) * 60,
-    y: 50,
-    color: colors[Math.floor(Math.random() * colors.length)],
-    size: 4 + Math.random() * 6,
-    rotation: Math.random() * 360,
-  }));
+  return Array.from({ length: count }, (_, i) => {
+    const x = 50 + (Math.random() - 0.5) * 60;
+    return {
+      id: i,
+      x,
+      y: 50,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: 4 + Math.random() * 6,
+      rotation: Math.random() * 360,
+      targetX: x + (Math.random() - 0.5) * 40,
+      targetY: 50 - 30 - Math.random() * 40,
+      duration: 1.2 + Math.random() * 0.5,
+      borderRadius: Math.random() > 0.5 ? "50%" : "2px",
+    };
+  });
 }
 
 interface CelebrationProps {
@@ -39,57 +50,70 @@ interface CelebrationProps {
 }
 
 export function Celebration({ trigger, onComplete }: CelebrationProps) {
-  const [particles, setParticles] = useState<Particle[]>([]);
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    if (trigger) {
-      setParticles(generateParticles(24));
-      setShow(true);
-      const timer = setTimeout(() => {
-        setShow(false);
-        onComplete?.();
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [trigger, onComplete]);
+  // Generate particles once per trigger change; stable when trigger is false
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const particles = useMemo(() => generateParticles(24), [trigger]);
 
   return (
-    <AnimatePresence>
-      {show && (
-        <div className="pointer-events-none fixed inset-0 z-[100] overflow-hidden">
-          {particles.map((p) => (
-            <motion.div
-              key={p.id}
-              initial={{
-                left: `${p.x}%`,
-                top: `${p.y}%`,
-                scale: 0,
-                rotate: 0,
-                opacity: 1,
-              }}
-              animate={{
-                left: `${p.x + (Math.random() - 0.5) * 40}%`,
-                top: `${p.y - 30 - Math.random() * 40}%`,
-                scale: [0, 1.2, 1],
-                rotate: p.rotation,
-                opacity: [1, 1, 0],
-              }}
-              transition={{
-                duration: 1.2 + Math.random() * 0.5,
-                ease: "easeOut",
-              }}
-              className="absolute"
-              style={{
-                width: p.size,
-                height: p.size,
-                backgroundColor: p.color,
-                borderRadius: Math.random() > 0.5 ? "50%" : "2px",
-              }}
-            />
-          ))}
-        </div>
+    <AnimatePresence
+      onExitComplete={() => {
+        if (!trigger) onComplete?.();
+      }}
+    >
+      {trigger && (
+        <CelebrationOverlay particles={particles} />
       )}
     </AnimatePresence>
+  );
+}
+
+function CelebrationOverlay({ particles }: { particles: Particle[] }) {
+  const [scope, animate] = useAnimate();
+
+  // Auto-dismiss after animation completes (handled by parent via onComplete)
+  return (
+    <motion.div
+      ref={scope}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="pointer-events-none fixed inset-0 z-[100] overflow-hidden"
+      onAnimationComplete={() => {
+        // Fade out after particles have animated
+        animate(scope.current, { opacity: 0 }, { delay: 1.2 });
+      }}
+    >
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          initial={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            scale: 0,
+            rotate: 0,
+            opacity: 1,
+          }}
+          animate={{
+            left: `${p.targetX}%`,
+            top: `${p.targetY}%`,
+            scale: [0, 1.2, 1],
+            rotate: p.rotation,
+            opacity: [1, 1, 0],
+          }}
+          transition={{
+            duration: p.duration,
+            ease: "easeOut",
+          }}
+          className="absolute"
+          style={{
+            width: p.size,
+            height: p.size,
+            backgroundColor: p.color,
+            borderRadius: p.borderRadius,
+          }}
+        />
+      ))}
+    </motion.div>
   );
 }

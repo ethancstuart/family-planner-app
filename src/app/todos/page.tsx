@@ -1,10 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
-import { TodoListPanel } from "@/components/todos/todo-list-panel";
-import { CreateListDialog } from "@/components/todos/create-list-dialog";
-import { TodoFilters } from "@/components/todos/todo-filters";
-import { EmptyTodos } from "@/components/todos/empty-todos";
 import type { TodoList, TodoItem, User } from "@/types";
 
 interface PageProps {

@@ -46,7 +46,7 @@ export function RecipeCard({ recipe, layout = "grid" }: RecipeCardProps) {
     return (
       <Link
         href={`/recipes/${recipe.id}`}
-        className="group flex items-center gap-4 rounded-xl border border-white/[0.06] bg-card p-3 surface-raised transition-all hover:surface-elevated hover:-translate-y-0.5"
+        className="group flex items-center gap-4 rounded-xl border border-border bg-card p-3 transition-colors hover:border-primary"
       >
         {/* Thumbnail */}
         <div className={`relative h-16 w-20 shrink-0 overflow-hidden rounded-lg ${!recipe.image_url ? `bg-gradient-to-r ${gradient}` : ""}`}>
@@ -97,7 +97,7 @@ export function RecipeCard({ recipe, layout = "grid" }: RecipeCardProps) {
   return (
     <Link
       href={`/recipes/${recipe.id}`}
-      className="group flex flex-col rounded-xl border border-white/[0.06] bg-card surface-raised transition-all hover:surface-elevated hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5"
+      className="group flex flex-col rounded-xl border border-border bg-card transition-colors hover:border-primary"
     >
       {/* Image or gradient header */}
       <div className={`relative h-32 rounded-t-xl overflow-hidden ${!recipe.image_url ? `bg-gradient-to-r ${gradient}` : ""}`}>

@@ -29,7 +29,7 @@ export default async function GroceryPage() {
 
   // Get item counts per list
   const listIds = (lists ?? []).map((l) => l.id);
-  let itemCounts: Record<string, { total: number; checked: number }> = {};
+  const itemCounts: Record<string, { total: number; checked: number }> = {};
 
   if (listIds.length > 0) {
     const { data: items } = await supabase

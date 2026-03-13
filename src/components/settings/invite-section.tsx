@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { Link2, Copy, Loader2, Trash2, UserPlus } from "lucide-react";
 
 interface Invitation {

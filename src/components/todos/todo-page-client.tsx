@@ -109,15 +109,15 @@ export function TodoPageClient({
 
       {/* Stats bar */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl border border-white/[0.06] bg-card p-4 text-center surface-raised">
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
           <p className="text-2xl font-bold">{remaining}</p>
           <p className="text-xs text-muted-foreground">Remaining</p>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-card p-4 text-center surface-raised">
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
           <p className={`text-2xl font-bold ${overdue > 0 ? "text-destructive" : ""}`}>{overdue}</p>
           <p className="text-xs text-muted-foreground">Overdue</p>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-card p-4 text-center surface-raised">
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
           <p className="text-2xl font-bold">{done}</p>
           <p className="text-xs text-muted-foreground">Done</p>
         </div>

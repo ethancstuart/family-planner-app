@@ -24,7 +24,6 @@ export function TodoListPanel({
   list,
   items,
   members,
-  currentUserId,
   accentGradient = "from-primary to-accent",
 }: TodoListPanelProps) {
   const router = useRouter();
@@ -126,7 +125,7 @@ export function TodoListPanel({
   const completed = localItems.filter((i) => i.completed);
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-white/[0.06] bg-card surface-raised">
+    <div className="relative overflow-hidden rounded-xl border border-border bg-card">
       <div className={`absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r ${accentGradient}`} />
       <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
       <button
@@ -160,7 +159,7 @@ export function TodoListPanel({
       </button>
 
       {open && (
-        <div className="border-t border-white/[0.06] px-5 py-4 space-y-3">
+        <div className="border-t border-border px-5 py-4 space-y-3">
           <AddTodoInput onAdd={handleAddItem} />
 
           <div className="space-y-1">

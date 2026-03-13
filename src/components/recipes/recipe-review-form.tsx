@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Plus, X, Sparkles } from "lucide-react";
-import type { Recipe, Ingredient } from "@/types";
+import type { Recipe } from "@/types";
 
 type ExtractedRecipe = Omit<Recipe, "id" | "household_id" | "created_by" | "created_at" | "updated_at">;
 

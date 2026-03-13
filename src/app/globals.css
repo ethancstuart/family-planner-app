@@ -72,7 +72,7 @@
   --chart-3: oklch(0.70 0.14 200);
   --chart-4: oklch(0.60 0.15 340);
   --chart-5: oklch(0.75 0.12 80);
-  --radius: 0.875rem;
+  --radius: 0.625rem;
   --sidebar: oklch(0.98 0.005 280);
   --sidebar-foreground: oklch(0.17 0.02 280);
   --sidebar-primary: oklch(0.58 0.22 25);
@@ -134,89 +134,20 @@
 
 @layer utilities {
   .surface-raised {
-    box-shadow: 0 1px 3px 0 oklch(0 0 0 / 8%), 0 1px 2px -1px oklch(0 0 0 / 8%);
+    box-shadow: 0 1px 2px 0 oklch(0 0 0 / 5%);
   }
   .surface-elevated {
-    box-shadow: 0 4px 12px 0 oklch(0 0 0 / 12%), 0 2px 4px -2px oklch(0 0 0 / 8%);
-    background-image: linear-gradient(to bottom, oklch(1 0 0 / 4%) 0%, transparent 8px);
+    box-shadow: 0 2px 8px 0 oklch(0 0 0 / 8%);
   }
   .dark .surface-raised {
-    box-shadow: 0 2px 6px 0 oklch(0 0 0 / 35%), 0 1px 3px -1px oklch(0 0 0 / 30%);
+    box-shadow: 0 1px 3px 0 oklch(0 0 0 / 20%);
   }
   .dark .surface-elevated {
-    box-shadow: 0 8px 24px 0 oklch(0 0 0 / 45%), 0 4px 8px -4px oklch(0 0 0 / 35%);
-    background-image: linear-gradient(to bottom, oklch(1 0 0 / 6%) 0%, transparent 8px);
+    box-shadow: 0 4px 12px 0 oklch(0 0 0 / 25%);
   }
 
-  .glass {
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    background-color: rgba(255, 255, 255, 0.6);
-    box-shadow: inset 0 0 0 1px oklch(1 0 0 / 10%);
-  }
-  .dark .glass {
-    background-color: rgba(28, 27, 33, 0.6);
-  }
-  @supports (background-color: oklch(from white l c h / 50%)) {
-    .glass { background-color: oklch(from var(--card) l c h / 60%); }
-  }
-  .glass-subtle {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background-color: rgba(255, 255, 255, 0.4);
-    box-shadow: inset 0 0 0 1px oklch(1 0 0 / 5%);
-  }
-  .dark .glass-subtle {
-    background-color: rgba(28, 27, 33, 0.4);
-  }
-  @supports (background-color: oklch(from white l c h / 50%)) {
-    .glass-subtle { background-color: oklch(from var(--card) l c h / 40%); }
-  }
-
-  .gradient-text {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .surface-glow {
-    box-shadow:
-      0 0 0 1px rgba(200, 80, 60, 0.2),
-      0 4px 20px -4px rgba(200, 80, 60, 0.25),
-      0 8px 32px -8px oklch(0 0 0 / 30%);
-  }
-  @supports (box-shadow: 0 0 0 1px oklch(from white l c h / 50%)) {
-    .surface-glow {
-      box-shadow:
-        0 0 0 1px oklch(from var(--primary) l c h / 20%),
-        0 4px 20px -4px oklch(from var(--primary) l c h / 25%),
-        0 8px 32px -8px oklch(0 0 0 / 30%);
-    }
-  }
-
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
-
-  .animate-shimmer {
-    position: relative;
-    overflow: hidden;
-  }
-  .animate-shimmer::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent 0%, oklch(1 0 0 / 8%) 50%, transparent 100%);
-    animation: shimmer 2s infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-3px); }
-  }
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
+  [data-slot="badge"] {
+    font-family: var(--font-mono);
+    letter-spacing: 0.01em;
   }
 }

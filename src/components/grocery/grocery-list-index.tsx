@@ -74,11 +74,11 @@ export function GroceryListIndex({
         return (
           <Link
             href={`/grocery/${heroList.id}`}
-            className="group block rounded-xl border border-white/[0.06] bg-card p-6 surface-raised transition-all hover:surface-glow"
+            className="group block rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                   <ShoppingCart className="h-6 w-6 text-primary" />
                 </div>
                 <div>
@@ -105,7 +105,7 @@ export function GroceryListIndex({
 
       {/* Other lists — compact rows */}
       {lists.length > 1 && (
-        <div className="divide-y divide-white/[0.06] rounded-xl border border-white/[0.06] bg-card surface-raised">
+        <div className="divide-y divide-border rounded-xl border border-border bg-card">
           {lists.slice(1).map((list) => {
             const counts = itemCounts[list.id] ?? { total: 0, checked: 0 };
             const isDone = counts.total > 0 && counts.checked === counts.total;
@@ -114,7 +114,7 @@ export function GroceryListIndex({
               <Link
                 key={list.id}
                 href={`/grocery/${list.id}`}
-                className="group flex items-center justify-between px-5 py-3.5 transition-colors hover:bg-white/[0.03]"
+                className="group flex items-center justify-between px-5 py-3.5 transition-colors hover:bg-muted/50"
               >
                 <div className="flex items-center gap-3">
                   <ShoppingCart className="h-4 w-4 text-muted-foreground" />

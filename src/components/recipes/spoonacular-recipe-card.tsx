@@ -19,7 +19,7 @@ export function SpoonacularRecipeCard({
   return (
     <button
       onClick={onClick}
-      className="group flex flex-col rounded-xl border border-border bg-card text-left transition-all hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5"
+      className="group flex flex-col rounded-xl border border-border bg-card text-left transition-colors hover:border-primary"
     >
       {result.image ? (
         <div className="relative h-40 overflow-hidden rounded-t-xl">

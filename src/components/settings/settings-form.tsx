@@ -71,9 +71,9 @@ export function SettingsForm({
   return (
     <div className="space-y-6">
       {/* Household */}
-      <div className="glass rounded-xl p-6 space-y-4">
+      <div className="rounded-xl border border-border bg-card p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
             <Users className="h-5 w-5 text-primary" />
           </div>
           <div>
@@ -81,7 +81,7 @@ export function SettingsForm({
             <p className="text-sm text-muted-foreground">Manage your household and members</p>
           </div>
         </div>
-        <div className="rounded-lg border border-white/[0.06] bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-lg font-semibold">{householdName}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             {members.length} member{members.length !== 1 ? "s" : ""}
@@ -92,7 +92,7 @@ export function SettingsForm({
           {members.map((m) => (
             <div
               key={m.user_id}
-              className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-card px-4 py-3"
+              className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3"
             >
               <div>
                 <p className="text-sm font-medium">
@@ -114,9 +114,9 @@ export function SettingsForm({
       </div>
 
       {/* Claude API Key */}
-      <div className="glass rounded-xl p-6 space-y-4">
+      <div className="rounded-xl border border-border bg-card p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
             <Shield className="h-5 w-5 text-primary" />
           </div>
           <div>
@@ -166,9 +166,9 @@ export function SettingsForm({
       </div>
 
       {/* Spoonacular API Key */}
-      <div className="glass rounded-xl p-6 space-y-4">
+      <div className="rounded-xl border border-border bg-card p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
             <Compass className="h-5 w-5 text-primary" />
           </div>
           <div>
@@ -238,10 +238,10 @@ export function SettingsForm({
       </div>
 
       {/* Google Calendar */}
-      <div className="glass rounded-xl p-6 space-y-4">
+      <div className="rounded-xl border border-border bg-card p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/10">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
               <Calendar className="h-5 w-5 text-primary" />
             </div>
             <div>

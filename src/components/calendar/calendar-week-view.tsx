@@ -35,8 +35,8 @@ export function CalendarWeekView({
             className={cn(
               "min-w-[140px] flex-shrink-0 rounded-xl p-1.5 md:min-w-0",
               isToday
-                ? "glass ring-1 ring-primary/20"
-                : "glass-subtle"
+                ? "bg-card border border-primary/20"
+                : "bg-card border border-border"
             )}
           >
             <div

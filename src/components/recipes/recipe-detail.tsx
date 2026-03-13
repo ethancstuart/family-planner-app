@@ -145,7 +145,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
       )}
 
       {/* Stats bar */}
-      <div className="glass-subtle flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg px-4 py-3 text-sm">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm">
         {recipe.prep_time_minutes && (
           <span className="flex items-center gap-1.5 text-muted-foreground">
             <Clock className="h-4 w-4" />
@@ -208,7 +208,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
         <ul className="space-y-2.5">
           {recipe.ingredients.map((ing, i) => (
             <li key={i} className="flex items-baseline gap-3 text-sm">
-              <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-gradient-to-br from-primary to-accent" />
+              <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
               <span>
                 {[ing.quantity, ing.unit, ing.name].filter(Boolean).join(" ")}
               </span>
@@ -223,7 +223,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
         <ol className="space-y-5">
           {recipe.steps.map((step, i) => (
             <li key={i} className="flex gap-4 text-sm">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-bold text-primary-foreground">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                 {i + 1}
               </span>
               <p className="pt-1 leading-relaxed">{step}</p>

@@ -64,8 +64,8 @@ export async function POST(request: Request) {
 
   try {
     let content: string | undefined;
-    let sourceType: string = mode;
-    let sourceUrl: string | null = url || null;
+    const sourceType: string = mode;
+    const sourceUrl: string | null = url || null;
 
     let ogImage: string | null = null;
 

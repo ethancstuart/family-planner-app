@@ -18,8 +18,8 @@ export function HeroAnimations({ children }: { children: React.ReactNode }) {
             <motion.div
               key={i}
               variants={{
-                hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
-                visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
               }}
             >
               {child}
@@ -28,8 +28,8 @@ export function HeroAnimations({ children }: { children: React.ReactNode }) {
         : (
             <motion.div
               variants={{
-                hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
-                visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
               }}
             >
               {children}
@@ -46,8 +46,8 @@ export function ScrollReveal({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
-      animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 30, filter: "blur(4px)" }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
@@ -68,8 +68,8 @@ export function StaggerItem({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-      animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 16, filter: "blur(4px)" }}
+      initial={{ opacity: 0, y: 16 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
     >
       {children}

@@ -58,7 +58,7 @@ export function MealSlotCard({ slot, label, mealPlanId, dayOfWeek, mealType, rec
     <div className={cn("group relative", isDragging && "shadow-lg")}>
       <Link
         href={`/recipes/${recipe.id}`}
-        className="block rounded-lg border border-white/[0.06] bg-card p-2 transition-all hover:border-primary/30 hover:scale-[1.02] relative overflow-hidden"
+        className="block rounded-lg border border-border bg-card p-2 transition-all hover:border-primary/30 hover:scale-[1.02] relative overflow-hidden"
       >
         <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg bg-gradient-to-b ${mealTypeGradients[mealType] ?? "from-primary to-accent"}`} />
         <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">

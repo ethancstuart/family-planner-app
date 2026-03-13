@@ -32,7 +32,7 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [householdCreated, setHouseholdCreated] = useState(false);
+  const [, setHouseholdCreated] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
