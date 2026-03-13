@@ -149,7 +149,7 @@ export default async function DashboardPage() {
 
         {/* Setup checklist — only shows when incomplete */}
         {(!hasApiKey || recipeCount === 0) && (
-          <div className="rounded-xl border border-primary/20 border-l-4 border-l-primary bg-primary/5 p-6">
+          <section aria-label="Setup" className="rounded-xl border border-primary/20 border-l-4 border-l-primary bg-primary/5 p-6">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Sparkles className="h-5 w-5 text-primary" />
               Get started
@@ -171,11 +171,11 @@ export default async function DashboardPage() {
                 desc="Paste a URL, drop a TikTok link, or type one in"
               />
             </div>
-          </div>
+          </section>
         )}
 
         {/* Two-zone layout */}
-        <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <section aria-label="Overview" className="grid gap-6 lg:grid-cols-[2fr_1fr]">
           {/* Left zone */}
           <div className="space-y-6">
             {/* Quick actions — compact pill buttons */}
@@ -357,7 +357,7 @@ export default async function DashboardPage() {
               )}
             </Link>
           </div>
-        </div>
+        </section>
       </div>
     </AppShell>
   );

@@ -132,6 +132,7 @@ export function CreateListDialog({
         {mode === "blank" && (
           <>
             <Input
+              aria-label="List name"
               placeholder="e.g., Weekly groceries"
               value={title}
               onChange={(e) => setTitle(e.target.value)}

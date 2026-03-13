@@ -73,13 +73,14 @@ export function RecipeReviewForm({ recipe, onSave, onBack }: RecipeReviewFormPro
       </div>
 
       <div className="space-y-2">
-        <Label>Title</Label>
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+        <Label htmlFor="recipe-title">Title</Label>
+        <Input id="recipe-title" value={title} onChange={(e) => setTitle(e.target.value)} />
       </div>
 
       <div className="space-y-2">
-        <Label>Description</Label>
+        <Label htmlFor="recipe-description">Description</Label>
         <Textarea
+          id="recipe-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
@@ -88,23 +89,24 @@ export function RecipeReviewForm({ recipe, onSave, onBack }: RecipeReviewFormPro
 
       <div className="grid grid-cols-3 gap-3">
         <div className="space-y-2">
-          <Label>Prep (min)</Label>
-          <Input type="number" value={prepTime} onChange={(e) => setPrepTime(e.target.value)} />
+          <Label htmlFor="recipe-prep">Prep (min)</Label>
+          <Input id="recipe-prep" type="number" value={prepTime} onChange={(e) => setPrepTime(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Cook (min)</Label>
-          <Input type="number" value={cookTime} onChange={(e) => setCookTime(e.target.value)} />
+          <Label htmlFor="recipe-cook">Cook (min)</Label>
+          <Input id="recipe-cook" type="number" value={cookTime} onChange={(e) => setCookTime(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Servings</Label>
-          <Input type="number" value={servings} onChange={(e) => setServings(e.target.value)} />
+          <Label htmlFor="recipe-servings">Servings</Label>
+          <Input id="recipe-servings" type="number" value={servings} onChange={(e) => setServings(e.target.value)} />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label>Tags</Label>
+        <Label htmlFor="recipe-tags">Tags</Label>
         <div className="flex gap-2">
           <Input
+            id="recipe-tags"
             placeholder="Add tag..."
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}

@@ -33,6 +33,7 @@ export function AddItemInput({ onAdd }: AddItemInputProps) {
   return (
     <div className="flex items-center gap-2">
       <Input
+        aria-label="Add an item"
         placeholder='Add item (e.g., "2 lbs chicken")'
         value={value}
         onChange={(e) => setValue(e.target.value)}

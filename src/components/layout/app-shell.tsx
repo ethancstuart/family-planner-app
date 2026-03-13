@@ -69,6 +69,13 @@ export function AppShell({ user, children }: AppShellProps) {
 
   return (
     <div className="min-h-screen pb-16 md:pb-0">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+      >
+        Skip to content
+      </a>
+
       {/* Desktop top nav */}
       <header className="fixed top-0 z-50 hidden w-full border-b border-border bg-card/95 backdrop-blur-sm md:block">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-1 px-4">
@@ -79,7 +86,7 @@ export function AppShell({ user, children }: AppShellProps) {
           </Link>
 
           {/* Nav items */}
-          <nav className="flex items-center gap-0.5">
+          <nav className="flex items-center gap-0.5" aria-label="Main navigation">
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href ||
@@ -88,6 +95,7 @@ export function AppShell({ user, children }: AppShellProps) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={isActive ? "page" : undefined}
                   className={`relative flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground ${
                     isActive
                       ? "bg-primary/10 text-foreground font-medium after:absolute after:inset-x-3 after:bottom-0 after:h-[2px] after:rounded-full after:bg-primary"
@@ -184,7 +192,7 @@ export function AppShell({ user, children }: AppShellProps) {
       </header>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 z-50 flex w-full items-center justify-around border-t border-border bg-card/95 backdrop-blur-sm md:hidden">
+      <nav className="fixed bottom-0 z-50 flex w-full items-center justify-around border-t border-border bg-card/95 backdrop-blur-sm md:hidden" aria-label="Mobile navigation">
         {mobileNavItems.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -193,6 +201,7 @@ export function AppShell({ user, children }: AppShellProps) {
             <div key={item.href} className="flex-1">
               <Link
                 href={item.href}
+                aria-current={isActive ? "page" : undefined}
                 className={`flex flex-col items-center gap-1 py-3 text-[10px] font-medium transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
@@ -206,7 +215,7 @@ export function AppShell({ user, children }: AppShellProps) {
       </nav>
 
       {/* Main content — full width, no sidebar offset */}
-      <main className="pt-14">
+      <main className="pt-14" id="main-content">
         <div className="mx-auto max-w-7xl p-4 sm:p-6">
           <PageTransition key={pathname}>{children}</PageTransition>
         </div>

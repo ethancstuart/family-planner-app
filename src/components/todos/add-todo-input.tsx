@@ -23,6 +23,7 @@ export function AddTodoInput({ onAdd }: AddTodoInputProps) {
     <div className="relative">
       <Plus className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
+        aria-label="Add a task"
         placeholder='Add a task (try "Buy milk due:friday")'
         value={value}
         onChange={(e) => setValue(e.target.value)}

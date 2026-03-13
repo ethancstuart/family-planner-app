@@ -63,6 +63,7 @@ export function CreateListDialog({
         </DialogHeader>
 
         <Input
+          aria-label="List name"
           placeholder="e.g., House chores"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
