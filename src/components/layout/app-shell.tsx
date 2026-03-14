@@ -86,7 +86,7 @@ export function AppShell({ user, children }: AppShellProps) {
           </Link>
 
           {/* Nav items */}
-          <nav className="flex items-center gap-0.5" aria-label="Main navigation">
+          <nav className="flex items-center gap-1" aria-label="Main navigation">
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href ||
@@ -202,7 +202,7 @@ export function AppShell({ user, children }: AppShellProps) {
               <Link
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-3 text-[10px] font-medium transition-colors ${
+                className={`flex flex-col items-center gap-1 py-3.5 text-[10px] font-medium transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               >
@@ -216,7 +216,7 @@ export function AppShell({ user, children }: AppShellProps) {
 
       {/* Main content — full width, no sidebar offset */}
       <main className="pt-14" id="main-content">
-        <div className="mx-auto max-w-7xl p-4 sm:p-6">
+        <div className="mx-auto max-w-7xl p-5 sm:p-8">
           <PageTransition key={pathname}>{children}</PageTransition>
         </div>
       </main>
