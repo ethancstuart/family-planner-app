@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { GroceryList, GroceryItem } from "@/types";
@@ -70,26 +70,31 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
 
   const [showCelebration, setShowCelebration] = useState(false);
 
-  const checkedCount = items.filter((i) => i.checked).length;
-  const uncheckedItems = items.filter((i) => !i.checked);
-  const checkedItems = items.filter((i) => i.checked);
+  const { checkedCount, uncheckedItems, checkedItems, groupedUnchecked, sortedCategories } =
+    useMemo(() => {
+      const checked = items.filter((i) => i.checked);
+      const unchecked = items.filter((i) => !i.checked);
+      const grouped = new Map<string, GroceryItem[]>();
+      for (const item of unchecked) {
+        const cat = item.category || "Other";
+        if (!grouped.has(cat)) grouped.set(cat, []);
+        grouped.get(cat)!.push(item);
+      }
+      const sorted = [...grouped.keys()].sort((a, b) => {
+        const ai = GROCERY_CATEGORIES.indexOf(a as typeof GROCERY_CATEGORIES[number]);
+        const bi = GROCERY_CATEGORIES.indexOf(b as typeof GROCERY_CATEGORIES[number]);
+        return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+      });
+      return {
+        checkedCount: checked.length,
+        uncheckedItems: unchecked,
+        checkedItems: checked,
+        groupedUnchecked: grouped,
+        sortedCategories: sorted,
+      };
+    }, [items]);
 
-  // Group by category
-  const groupedUnchecked = new Map<string, GroceryItem[]>();
-  for (const item of uncheckedItems) {
-    const cat = item.category || "Other";
-    if (!groupedUnchecked.has(cat)) groupedUnchecked.set(cat, []);
-    groupedUnchecked.get(cat)!.push(item);
-  }
-
-  // Sort categories by GROCERY_CATEGORIES order
-  const sortedCategories = [...groupedUnchecked.keys()].sort((a, b) => {
-    const ai = GROCERY_CATEGORIES.indexOf(a as typeof GROCERY_CATEGORIES[number]);
-    const bi = GROCERY_CATEGORIES.indexOf(b as typeof GROCERY_CATEGORIES[number]);
-    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-  });
-
-  const handleToggle = async (itemId: string, checked: boolean) => {
+  const handleToggle = useCallback(async (itemId: string, checked: boolean) => {
     // Optimistic update
     setItems((prev) => {
       const next = prev.map((item) => (item.id === itemId ? { ...item, checked } : item));
@@ -115,7 +120,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
       );
       toast.error("Failed to update item");
     }
-  };
+  }, []);
 
   const handleAddItem = async (item: {
     name: string;
@@ -144,7 +149,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
     }
   };
 
-  const handleDeleteItem = async (itemId: string) => {
+  const handleDeleteItem = useCallback(async (itemId: string) => {
     const prev = items;
     setItems((items) => items.filter((i) => i.id !== itemId));
 
@@ -158,7 +163,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
       setItems(prev);
       toast.error("Failed to delete item");
     }
-  };
+  }, []);
 
   const handleDeleteList = async () => {
     const supabase = createClient();

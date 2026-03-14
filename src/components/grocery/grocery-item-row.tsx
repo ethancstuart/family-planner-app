@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import type { GroceryItem } from "@/types";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
@@ -13,7 +14,7 @@ interface GroceryItemRowProps {
   large?: boolean;
 }
 
-export function GroceryItemRow({
+export const GroceryItemRow = memo(function GroceryItemRow({
   item,
   onToggle,
   onDelete,
@@ -69,4 +70,4 @@ export function GroceryItemRow({
       </button>
     </motion.div>
   );
-}
+});

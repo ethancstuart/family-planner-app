@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Recipe } from "@/types";
 import { RecipeCard } from "./recipe-card";
 import { AddRecipeButton } from "./add-recipe-button";
@@ -29,9 +29,10 @@ export function RecipeList({ recipes }: RecipeListProps) {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const allTags = Array.from(
-    new Set(recipes.flatMap((r) => r.tags))
-  ).sort();
+  const allTags = useMemo(
+    () => Array.from(new Set(recipes.flatMap((r) => r.tags))).sort(),
+    [recipes]
+  );
 
   const filtered = recipes.filter((r) => {
     const matchesSearch =

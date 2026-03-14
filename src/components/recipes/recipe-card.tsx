@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Recipe } from "@/types";
@@ -36,7 +37,7 @@ interface RecipeCardProps {
   layout?: "grid" | "list";
 }
 
-export function RecipeCard({ recipe, layout = "grid" }: RecipeCardProps) {
+export const RecipeCard = memo(function RecipeCard({ recipe, layout = "grid" }: RecipeCardProps) {
   const totalTime =
     (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
   const SourceIcon = sourceIcons[recipe.source_type] ?? PenLine;
@@ -169,4 +170,4 @@ export function RecipeCard({ recipe, layout = "grid" }: RecipeCardProps) {
       </div>
     </Link>
   );
-}
+});

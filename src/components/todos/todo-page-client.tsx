@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { TodoList, TodoItem, User } from "@/types";
 import { TodoListPanel } from "./todo-list-panel";
 import { CreateListDialog } from "./create-list-dialog";
@@ -72,14 +72,20 @@ export function TodoPageClient({
     );
   }
 
-  const remaining = allItems.filter((i) => !i.completed).length;
-  const overdue = allItems.filter((i) => {
-    if (i.completed || !i.due_date) return false;
+  const { remaining, overdue, done } = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return new Date(i.due_date + "T00:00:00") < today;
-  }).length;
-  const done = allItems.filter((i) => i.completed).length;
+    return {
+      remaining: allItems.filter((i) => !i.completed).length,
+      overdue: allItems.filter(
+        (i) =>
+          !i.completed &&
+          i.due_date &&
+          new Date(i.due_date + "T00:00:00") < today
+      ).length,
+      done: allItems.filter((i) => i.completed).length,
+    };
+  }, [allItems]);
 
   const accentGradients = [
     "from-primary to-accent",

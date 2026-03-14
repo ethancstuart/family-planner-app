@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { TodoList, TodoItem, User } from "@/types";
 import { createClient } from "@/lib/supabase/client";
@@ -34,7 +34,7 @@ export function TodoListPanel({
   const completedCount = localItems.filter((i) => i.completed).length;
   const totalCount = localItems.length;
 
-  const handleToggle = async (itemId: string, completed: boolean) => {
+  const handleToggle = useCallback(async (itemId: string, completed: boolean) => {
     setLocalItems((prev) => {
       const next = prev.map((i) => (i.id === itemId ? { ...i, completed } : i));
       if (completed && next.length > 0 && next.every((i) => i.completed)) {
@@ -55,7 +55,7 @@ export function TodoListPanel({
       );
       toast.error("Failed to update task");
     }
-  };
+  }, []);
 
   const handleAddItem = async (item: {
     title: string;
@@ -81,7 +81,7 @@ export function TodoListPanel({
     }
   };
 
-  const handleAssign = async (itemId: string, userId: string | null) => {
+  const handleAssign = useCallback(async (itemId: string, userId: string | null) => {
     setLocalItems((prev) =>
       prev.map((i) => (i.id === itemId ? { ...i, assigned_to: userId } : i))
     );
@@ -96,9 +96,9 @@ export function TodoListPanel({
       toast.error("Failed to assign task");
       router.refresh();
     }
-  };
+  }, [router]);
 
-  const handleDeleteItem = async (itemId: string) => {
+  const handleDeleteItem = useCallback(async (itemId: string) => {
     const prev = localItems;
     setLocalItems((items) => items.filter((i) => i.id !== itemId));
 
@@ -112,7 +112,7 @@ export function TodoListPanel({
       setLocalItems(prev);
       toast.error("Failed to delete task");
     }
-  };
+  }, []);
 
   const handleDeleteList = async () => {
     const supabase = createClient();

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import type { TodoItem, User } from "@/types";
 import { AssignMemberPopover } from "./assign-member-popover";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,7 @@ interface TodoItemRowProps {
   onDelete: (id: string) => void;
 }
 
-export function TodoItemRow({
+export const TodoItemRow = memo(function TodoItemRow({
   item,
   members,
   onToggle,
@@ -101,4 +102,4 @@ export function TodoItemRow({
       </div>
     </motion.div>
   );
-}
+});
