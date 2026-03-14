@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { RecipeList } from "@/components/recipes/recipe-list";
 import { AddRecipeButton } from "@/components/recipes/add-recipe-button";
+
+export const metadata: Metadata = { title: "Recipes" };
 
 export default async function RecipesPage() {
   const supabase = await createClient();

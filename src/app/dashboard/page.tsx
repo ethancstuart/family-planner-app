@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import Link from "next/link";
+
+export const metadata: Metadata = { title: "Dashboard" };
 import {
   UtensilsCrossed,
   Plus,

@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { CalendarHub } from "@/components/calendar/calendar-hub";
 import { getWeekStartDate } from "@/lib/utils";
+
+export const metadata: Metadata = { title: "Calendar" };
 import type { MealPlanSlot } from "@/types";
 
 interface PageProps {

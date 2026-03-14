@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import type { TodoList, TodoItem, User } from "@/types";
+
+export const metadata: Metadata = { title: "To-Dos" };
 
 interface PageProps {
   searchParams: Promise<{ filter?: string }>;

@@ -20,7 +20,10 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Family Planner — Recipes, Meals & Groceries for Your Household",
+  title: {
+    default: "Family Planner — Recipes, Meals & Groceries for Your Household",
+    template: "%s | Family Planner",
+  },
   description:
     "The family hub that turns TikTok videos into recipes, recipes into meal plans, and meal plans into grocery lists. Free and open source.",
 };

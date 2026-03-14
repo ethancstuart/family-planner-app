@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { WeekView } from "@/components/meal-planner/week-view";
+
+export const metadata: Metadata = { title: "Meal Planner" };
 import { MealPlannerHeader } from "@/components/meal-planner/meal-planner-header";
 import { EmptyMealPlan } from "@/components/meal-planner/empty-meal-plan";
 import { getWeekStartDate, parseDate } from "@/lib/utils";

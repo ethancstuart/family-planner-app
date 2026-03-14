@@ -33,7 +33,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "No household" }, { status: 403 });
   }
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
   const { meal_plan_id, week_start_date } = body;
 
   if (!meal_plan_id || !week_start_date) {

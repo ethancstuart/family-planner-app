@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { DiscoverRecipes } from "@/components/recipes/discover-recipes";
 import { Settings, Compass } from "lucide-react";
+
+export const metadata: Metadata = { title: "Discover Recipes" };
 import Link from "next/link";
 
 export default async function DiscoverPage() {

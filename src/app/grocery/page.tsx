@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { GroceryListIndex } from "@/components/grocery/grocery-list-index";
 import type { GroceryList } from "@/types";
+
+export const metadata: Metadata = { title: "Grocery Lists" };
 
 export default async function GroceryPage() {
   const supabase = await createClient();
