@@ -94,35 +94,37 @@ export default async function DashboardPage() {
   const favorites = favoritesResult.data ?? [];
   const firstName = user.user_metadata?.full_name?.split(" ")[0] || "there";
 
-  // Fetch meal slots if we have a plan — get all 7 days
+  // Fetch meal slots and grocery items in parallel
+  const groceryList = groceryResult.data;
+  const [mealSlotsResult, groceryItemsResult] = await Promise.all([
+    mealPlanResult.data
+      ? supabase
+          .from("meal_plan_slots")
+          .select("day_of_week, meal_type, recipe:recipes(title)")
+          .eq("meal_plan_id", mealPlanResult.data.id)
+          .limit(28)
+      : Promise.resolve({ data: null }),
+    groceryList
+      ? supabase
+          .from("grocery_items")
+          .select("checked")
+          .eq("grocery_list_id", groceryList.id)
+      : Promise.resolve({ data: null }),
+  ]);
+
   let upcomingMeals: { day_of_week: number; meal_type: string; recipe: { title: string } | null }[] = [];
-  if (mealPlanResult.data) {
-    const { data: slots } = await supabase
-      .from("meal_plan_slots")
-      .select("day_of_week, meal_type, recipe:recipes(title)")
-      .eq("meal_plan_id", mealPlanResult.data.id)
-      .limit(28);
-    if (slots) {
-      upcomingMeals = slots.map((s: Record<string, unknown>) => ({
-        day_of_week: s.day_of_week as number,
-        meal_type: s.meal_type as string,
-        recipe: Array.isArray(s.recipe) ? s.recipe[0] ?? null : s.recipe as { title: string } | null,
-      }));
-    }
+  if (mealSlotsResult.data) {
+    upcomingMeals = mealSlotsResult.data.map((s: Record<string, unknown>) => ({
+      day_of_week: s.day_of_week as number,
+      meal_type: s.meal_type as string,
+      recipe: Array.isArray(s.recipe) ? s.recipe[0] ?? null : s.recipe as { title: string } | null,
+    }));
   }
 
-  // Fetch grocery item counts
   const groceryProgress = { total: 0, checked: 0 };
-  const groceryList = groceryResult.data;
-  if (groceryList) {
-    const { data: gItems } = await supabase
-      .from("grocery_items")
-      .select("checked")
-      .eq("grocery_list_id", groceryList.id);
-    if (gItems) {
-      groceryProgress.total = gItems.length;
-      groceryProgress.checked = gItems.filter((i) => i.checked).length;
-    }
+  if (groceryItemsResult.data) {
+    groceryProgress.total = groceryItemsResult.data.length;
+    groceryProgress.checked = groceryItemsResult.data.filter((i) => i.checked).length;
   }
 
   const pendingTodos = todosResult.data ?? [];

@@ -51,27 +51,26 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
     mealPlan = newPlan;
   }
 
-  // Fetch slots with recipes
-  const { data: slots } = mealPlan
-    ? await supabase
-        .from("meal_plan_slots")
-        .select("*, recipe:recipes(*)")
-        .eq("meal_plan_id", mealPlan.id)
-    : { data: [] };
-
-  // Check calendar connection
-  const { data: calConnection } = await supabase
-    .from("calendar_connections")
-    .select("id")
-    .eq("user_id", user.id)
-    .single();
-
-  // Fetch all recipes for the picker
-  const { data: recipes } = await supabase
-    .from("recipes")
-    .select("*")
-    .eq("household_id", membership.household_id)
-    .order("title");
+  // Fetch slots, calendar connection, and recipes in parallel
+  const [{ data: slots }, { data: calConnection }, { data: recipes }] =
+    await Promise.all([
+      mealPlan
+        ? supabase
+            .from("meal_plan_slots")
+            .select("*, recipe:recipes(*)")
+            .eq("meal_plan_id", mealPlan.id)
+        : Promise.resolve({ data: [] as null[] }),
+      supabase
+        .from("calendar_connections")
+        .select("id")
+        .eq("user_id", user.id)
+        .single(),
+      supabase
+        .from("recipes")
+        .select("*")
+        .eq("household_id", membership.household_id)
+        .order("title"),
+    ]);
 
   const weekDate = parseDate(weekStart);
   const hasAnySlots = (slots ?? []).length > 0;

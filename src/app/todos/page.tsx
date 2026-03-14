@@ -27,41 +27,40 @@ export default async function TodosPage({ searchParams }: PageProps) {
 
   const householdId = membership.household_id;
 
-  // Get todo lists with items
-  const { data: lists } = await supabase
-    .from("todo_lists")
-    .select("*")
-    .eq("household_id", householdId)
-    .order("created_at", { ascending: false });
+  // Round 1: fetch lists and members in parallel (both depend only on householdId)
+  const [{ data: lists }, { data: memberData }] = await Promise.all([
+    supabase
+      .from("todo_lists")
+      .select("*")
+      .eq("household_id", householdId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("household_members")
+      .select("user_id")
+      .eq("household_id", householdId),
+  ]);
 
   const listIds = (lists ?? []).map((l) => l.id);
-  let allItems: TodoItem[] = [];
-
-  if (listIds.length > 0) {
-    const { data: items } = await supabase
-      .from("todo_items")
-      .select("*")
-      .in("todo_list_id", listIds)
-      .order("created_at");
-    allItems = (items as TodoItem[]) ?? [];
-  }
-
-  // Get household members for assignment
-  const { data: memberData } = await supabase
-    .from("household_members")
-    .select("user_id")
-    .eq("household_id", householdId);
-
   const memberIds = (memberData ?? []).map((m) => m.user_id);
-  let members: User[] = [];
 
-  if (memberIds.length > 0) {
-    const { data: profiles } = await supabase
-      .from("users")
-      .select("*")
-      .in("id", memberIds);
-    members = (profiles as User[]) ?? [];
-  }
+  // Round 2: fetch items and profiles in parallel (depend on round 1 results)
+  const [allItems, members] = await Promise.all([
+    listIds.length > 0
+      ? supabase
+          .from("todo_items")
+          .select("*")
+          .in("todo_list_id", listIds)
+          .order("created_at")
+          .then(({ data }) => (data as TodoItem[]) ?? [])
+      : Promise.resolve([] as TodoItem[]),
+    memberIds.length > 0
+      ? supabase
+          .from("users")
+          .select("*")
+          .in("id", memberIds)
+          .then(({ data }) => (data as User[]) ?? [])
+      : Promise.resolve([] as User[]),
+  ]);
 
   return (
     <AppShell user={user}>
