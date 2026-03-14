@@ -158,8 +158,11 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
   };
 
   const handleDeleteItem = useCallback(async (itemId: string) => {
-    const prev = items;
-    setItems((items) => items.filter((i) => i.id !== itemId));
+    let rollback: GroceryItem[] | null = null;
+    setItems((prev) => {
+      rollback = prev;
+      return prev.filter((i) => i.id !== itemId);
+    });
 
     const supabase = createClient();
     const { error } = await supabase
@@ -168,7 +171,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
       .eq("id", itemId);
 
     if (error) {
-      setItems(prev);
+      if (rollback) setItems(rollback);
       toast.error("Failed to delete item");
     }
   }, []);

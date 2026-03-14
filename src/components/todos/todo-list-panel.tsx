@@ -99,8 +99,11 @@ export function TodoListPanel({
   }, [router]);
 
   const handleDeleteItem = useCallback(async (itemId: string) => {
-    const prev = localItems;
-    setLocalItems((items) => items.filter((i) => i.id !== itemId));
+    let rollback: TodoItem[] | null = null;
+    setLocalItems((prev) => {
+      rollback = prev;
+      return prev.filter((i) => i.id !== itemId);
+    });
 
     const supabase = createClient();
     const { error } = await supabase
@@ -109,7 +112,7 @@ export function TodoListPanel({
       .eq("id", itemId);
 
     if (error) {
-      setLocalItems(prev);
+      if (rollback) setLocalItems(rollback);
       toast.error("Failed to delete task");
     }
   }, []);

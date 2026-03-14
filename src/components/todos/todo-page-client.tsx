@@ -30,6 +30,21 @@ export function TodoPageClient({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState(filter || "all");
 
+  const { remaining, overdue, done } = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return {
+      remaining: allItems.filter((i) => !i.completed).length,
+      overdue: allItems.filter(
+        (i) =>
+          !i.completed &&
+          i.due_date &&
+          new Date(i.due_date + "T00:00:00") < today
+      ).length,
+      done: allItems.filter((i) => i.completed).length,
+    };
+  }, [allItems]);
+
   const filterItems = (items: TodoItem[]) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -71,21 +86,6 @@ export function TodoPageClient({
       </div>
     );
   }
-
-  const { remaining, overdue, done } = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return {
-      remaining: allItems.filter((i) => !i.completed).length,
-      overdue: allItems.filter(
-        (i) =>
-          !i.completed &&
-          i.due_date &&
-          new Date(i.due_date + "T00:00:00") < today
-      ).length,
-      done: allItems.filter((i) => i.completed).length,
-    };
-  }, [allItems]);
 
   const accentGradients = [
     "from-primary to-accent",
