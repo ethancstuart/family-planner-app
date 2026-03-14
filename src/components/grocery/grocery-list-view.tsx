@@ -11,6 +11,13 @@ import { CategorySection } from "./category-section";
 import { ShoppingModeToggle } from "./shopping-mode-toggle";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { GROCERY_CATEGORIES } from "@/lib/constants";
@@ -69,6 +76,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
   }, [list.id]);
 
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { checkedCount, uncheckedItems, checkedItems, groupedUnchecked, sortedCategories } =
     useMemo(() => {
@@ -211,7 +219,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
               <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 Done ({checkedItems.length})
               </p>
-              <div className="space-y-1 opacity-50">
+              <div className="space-y-1 opacity-60">
                 {checkedItems.map((item) => (
                   <GroceryItemRow
                     key={item.id}
@@ -258,7 +266,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleDeleteList}
+            onClick={() => setShowDeleteDialog(true)}
             className="text-destructive"
             aria-label="Delete list"
           >
@@ -293,7 +301,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
           <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Checked off ({checkedItems.length})
           </p>
-          <div className="space-y-1 opacity-50">
+          <div className="space-y-1 opacity-60">
             {checkedItems.map((item) => (
               <GroceryItemRow
                 key={item.id}
@@ -305,6 +313,26 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
           </div>
         </div>
       )}
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete grocery list?</DialogTitle>
+            <DialogDescription>
+              &ldquo;{list.title}&rdquo; and all its items will be permanently
+              removed. This can&apos;t be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteList}>
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
