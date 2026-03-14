@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors 'self' https://ethancstuart.com",
+            value: "frame-ancestors 'self' https://*.vercel.app https://ethancstuart.com",
           },
         ],
       },

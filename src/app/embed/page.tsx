@@ -48,7 +48,7 @@ export default function EmbedPage() {
         {/* Greeting — compact */}
         <div>
           <h1 className="text-lg font-bold tracking-tight">
-            Good morning, Stuart family!
+            Good morning, family!
           </h1>
           <p className="text-xs text-muted-foreground">
             Here&apos;s what&apos;s happening in your kitchen.
