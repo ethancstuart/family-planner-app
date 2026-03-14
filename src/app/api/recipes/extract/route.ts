@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+function validateUrl(raw: string): string {
+  const parsed = new URL(raw);
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new Error("Only HTTP and HTTPS URLs are supported");
+  }
+  return parsed.href;
+}
+
 const RECIPE_EXTRACTION_PROMPT = `Extract a structured recipe from the following content. Return ONLY valid JSON with this exact structure (no markdown, no code fences):
 {
   "title": "Recipe title",
@@ -59,7 +67,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
   const { url, image, mode } = body;
 
   try {
@@ -109,12 +122,21 @@ export async function POST(request: Request) {
 }
 
 async function extractFromUrl(url: string): Promise<{ text: string; extractedOgImage: string | null }> {
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (compatible; FamilyPlanner/1.0; recipe extraction)",
-    },
-  });
+  const validatedUrl = validateUrl(url);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+  let res: Response;
+  try {
+    res = await fetch(validatedUrl, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (compatible; FamilyPlanner/1.0; recipe extraction)",
+      },
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!res.ok) throw new Error("Could not fetch URL");
 
@@ -184,12 +206,21 @@ function findRecipeInJsonLd(data: unknown): unknown | null {
 async function extractFromVideo(url: string): Promise<string> {
   // For video URLs, we pass the URL to Claude and ask it to work with
   // whatever metadata/description is available from the page
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (compatible; FamilyPlanner/1.0; recipe extraction)",
-    },
-  });
+  const validatedUrl = validateUrl(url);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+  let res: Response;
+  try {
+    res = await fetch(validatedUrl, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (compatible; FamilyPlanner/1.0; recipe extraction)",
+      },
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!res.ok) throw new Error("Could not fetch video page");
 

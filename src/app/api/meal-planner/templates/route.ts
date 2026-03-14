@@ -59,7 +59,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No household found" }, { status: 400 });
   }
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
   const { name, sourceMealPlanId } = body;
 
   if (!name?.trim() || !sourceMealPlanId) {

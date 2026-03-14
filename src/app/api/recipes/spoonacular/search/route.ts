@@ -36,7 +36,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
   const { query, cuisine, diet, offset = 0 } = body;
 
   if (!query?.trim()) {
