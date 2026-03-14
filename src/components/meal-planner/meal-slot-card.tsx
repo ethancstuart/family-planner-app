@@ -21,10 +21,10 @@ interface MealSlotCardProps {
 }
 
 const mealTypeGradients: Record<string, string> = {
-  breakfast: "from-amber-400 to-orange-400",
-  lunch: "from-green-400 to-emerald-400",
-  dinner: "from-rose-400 to-primary",
-  snack: "from-violet-400 to-accent",
+  breakfast: "from-amber-400 to-yellow-400",
+  lunch: "from-teal-400 to-emerald-400",
+  dinner: "from-purple-400 to-violet-400",
+  snack: "from-fuchsia-400 to-pink-400",
 };
 
 export function MealSlotCard({ slot, label, mealPlanId, dayOfWeek, mealType, recipes, isDragging }: MealSlotCardProps) {
@@ -58,7 +58,7 @@ export function MealSlotCard({ slot, label, mealPlanId, dayOfWeek, mealType, rec
     <div className={cn("group relative", isDragging && "shadow-lg")}>
       <Link
         href={`/recipes/${recipe.id}`}
-        className="block rounded-lg border border-border bg-card p-2 transition-all hover:border-primary/30 hover:scale-[1.02] relative overflow-hidden"
+        className="block rounded-lg border border-border bg-card p-2.5 transition-all hover:border-primary/30 hover:scale-[1.02] relative overflow-hidden"
       >
         <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg bg-gradient-to-b ${mealTypeGradients[mealType] ?? "from-primary to-accent"}`} />
         <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">

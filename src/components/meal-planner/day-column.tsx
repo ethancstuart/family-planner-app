@@ -27,13 +27,13 @@ export function DayColumn({
   return (
     <div
       className={cn(
-        "min-w-[160px] flex-shrink-0 rounded-xl p-3 md:min-w-0 transition-all",
+        "min-w-[160px] flex-shrink-0 rounded-xl p-4 md:min-w-0 transition-all",
         isToday
           ? "bg-card border border-primary/30 bg-primary/5"
           : "bg-card border border-border"
       )}
     >
-      <div className="mb-3 text-center">
+      <div className="mb-4 text-center">
         <p
           className={cn(
             "text-xs font-medium uppercase tracking-wider text-muted-foreground",

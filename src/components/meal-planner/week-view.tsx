@@ -165,7 +165,7 @@ export function WeekView({
 
       <div
         ref={containerRef}
-        className="flex gap-3 overflow-x-auto pb-4 md:grid md:grid-cols-7 md:overflow-visible"
+        className="flex gap-3 overflow-x-auto pb-4 md:grid md:grid-cols-7 md:gap-4 md:overflow-visible"
       >
         {DAYS_OF_WEEK_SHORT.map((dayName, index) => {
           const date = new Date(startDate);
