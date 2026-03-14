@@ -32,7 +32,7 @@ export interface Recipe {
   servings: number | null;
   source_url: string | null;
   source_type: "manual" | "url" | "video" | "image" | "spoonacular";
-  spoonacular_id?: number | null;
+  spoonacular_id: number | null;
   image_url: string | null;
   is_favorite: boolean;
   created_by: string;
