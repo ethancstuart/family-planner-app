@@ -17,13 +17,13 @@ interface Particle {
 }
 
 const colors = [
-  "#f97316", // orange
-  "#ef4444", // red
-  "#8b5cf6", // violet
-  "#06b6d4", // cyan
-  "#22c55e", // green
-  "#eab308", // yellow
-  "#ec4899", // pink
+  "oklch(0.70 0.18 45)",   // orange
+  "oklch(0.63 0.22 25)",   // red
+  "oklch(0.62 0.20 285)",  // violet (primary family)
+  "oklch(0.72 0.14 195)",  // cyan
+  "oklch(0.72 0.17 155)",  // green
+  "oklch(0.80 0.18 95)",   // yellow
+  "oklch(0.70 0.20 340)",  // pink
 ];
 
 function generateParticles(count: number): Particle[] {

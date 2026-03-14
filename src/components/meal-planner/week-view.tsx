@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { MealPlanSlot, Recipe, DayOfWeek, MealType } from "@/types";
 import { DayColumn } from "./day-column";
 import { MealSlotCard } from "./meal-slot-card";
 import { DAYS_OF_WEEK_SHORT, MEAL_TYPES } from "@/lib/constants";
-import { parseDate } from "@/lib/utils";
+import { cn, parseDate } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import {
   DndContext,
@@ -40,6 +40,7 @@ export function WeekView({
   today.setHours(0, 0, 0, 0);
 
   const [activeSlot, setActiveSlot] = useState<MealPlanSlot | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const todayRef = useRef<HTMLDivElement>(null);
 
@@ -63,21 +64,15 @@ export function WeekView({
 
   const sensors = useSensors(mouseSensor, touchSensor);
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     const slot = event.active.data.current?.slot as MealPlanSlot | undefined;
     setActiveSlot(slot ?? null);
-    // Disable scroll during drag on mobile
-    if (containerRef.current) {
-      containerRef.current.style.overflowX = "hidden";
-    }
-  };
+    setIsDragging(true);
+  }, []);
 
   const handleDragEnd = async (event: DragEndEvent) => {
     setActiveSlot(null);
-    // Restore scroll
-    if (containerRef.current) {
-      containerRef.current.style.overflowX = "";
-    }
+    setIsDragging(false);
 
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -165,7 +160,10 @@ export function WeekView({
 
       <div
         ref={containerRef}
-        className="flex gap-3 overflow-x-auto pb-4 md:grid md:grid-cols-7 md:gap-4 md:overflow-visible"
+        className={cn(
+          "flex gap-3 overflow-x-auto pb-4 md:grid md:grid-cols-7 md:gap-4 md:overflow-visible",
+          isDragging && "!overflow-x-hidden"
+        )}
       >
         {DAYS_OF_WEEK_SHORT.map((dayName, index) => {
           const date = new Date(startDate);
