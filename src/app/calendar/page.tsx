@@ -55,7 +55,7 @@ export default async function CalendarPage({ searchParams }: PageProps) {
 
   return (
     <AppShell user={user}>
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Calendar

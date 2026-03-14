@@ -78,7 +78,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
 
   return (
     <AppShell user={user}>
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
