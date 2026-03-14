@@ -83,11 +83,11 @@ export function TodoPageClient({
 
   const accentGradients = [
     "from-primary to-accent",
+    "from-purple-400 to-indigo-500",
+    "from-violet-400 to-fuchsia-500",
     "from-teal-400 to-cyan-500",
     "from-amber-400 to-orange-500",
-    "from-violet-400 to-purple-500",
-    "from-rose-400 to-pink-500",
-    "from-emerald-400 to-green-500",
+    "from-sky-400 to-blue-500",
   ];
 
   return (
@@ -109,15 +109,15 @@ export function TodoPageClient({
 
       {/* Stats bar */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl border border-border bg-card p-4 text-center">
+        <div className="rounded-xl border border-border bg-card p-5 text-center">
           <p className="text-2xl font-bold">{remaining}</p>
           <p className="text-xs text-muted-foreground">Remaining</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 text-center">
+        <div className="rounded-xl border border-border bg-card p-5 text-center">
           <p className={`text-2xl font-bold ${overdue > 0 ? "text-destructive" : ""}`}>{overdue}</p>
           <p className="text-xs text-muted-foreground">Overdue</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 text-center">
+        <div className="rounded-xl border border-border bg-card p-5 text-center">
           <p className="text-2xl font-bold">{done}</p>
           <p className="text-xs text-muted-foreground">Done</p>
         </div>
