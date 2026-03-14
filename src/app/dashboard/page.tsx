@@ -149,7 +149,7 @@ export default async function DashboardPage() {
 
         {/* Setup checklist — only shows when incomplete */}
         {(!hasApiKey || recipeCount === 0) && (
-          <section aria-label="Setup" className="rounded-xl border border-primary/20 border-l-4 border-l-primary bg-primary/5 p-6">
+          <section aria-label="Setup" className="rounded-xl border border-primary/20 border-l-4 border-l-primary bg-primary/5 p-7">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Sparkles className="h-5 w-5 text-primary" />
               Get started
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/recipes"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium transition-colors hover:border-primary"
               >
                 <UtensilsCrossed className="h-4 w-4 text-primary" />
                 Recipes
@@ -190,21 +190,21 @@ export default async function DashboardPage() {
               </Link>
               <Link
                 href="/recipes"
-                className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-primary/40"
+                className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-5 py-2.5 text-sm font-medium text-primary transition-colors hover:border-primary/40"
               >
                 <Plus className="h-4 w-4" />
                 Add Recipe
               </Link>
               <Link
                 href="/meal-planner"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium transition-colors hover:border-primary"
               >
                 <CalendarDays className="h-4 w-4 text-primary" />
                 Meal Plan
               </Link>
               <Link
                 href="/settings"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium transition-colors hover:border-primary"
               >
                 <Settings className="h-4 w-4 text-muted-foreground" />
                 Settings
@@ -213,7 +213,7 @@ export default async function DashboardPage() {
 
             {/* Week meal strip */}
             <Link href="/meal-planner" className="group block">
-              <div className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary">
+              <div className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CalendarDays className="h-4 w-4 text-primary" />
@@ -221,7 +221,7 @@ export default async function DashboardPage() {
                   </div>
                   <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                 </div>
-                <div className="grid grid-cols-7 gap-1.5">
+                <div className="grid grid-cols-7 gap-2">
                   {DAYS_OF_WEEK_SHORT.map((day, i) => {
                     const dayMeals = mealsByDay[i] ?? [];
                     return (
@@ -267,7 +267,7 @@ export default async function DashboardPage() {
                     <Link
                       key={recipe.id}
                       href={`/recipes/${recipe.id}`}
-                      className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 transition-colors hover:border-primary"
+                      className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-5 py-3 transition-colors hover:border-primary"
                     >
                       <ChefHat className="h-4 w-4 shrink-0 text-primary" />
                       <span className="whitespace-nowrap text-sm font-medium">
@@ -285,7 +285,7 @@ export default async function DashboardPage() {
             {/* Grocery progress widget */}
             <Link
               href={groceryList ? `/grocery/${groceryList.id}` : "/grocery"}
-              className="group relative block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary"
+              className="group relative block rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary"
             >
               <div className="absolute left-0 top-3 bottom-3 w-0.5 rounded-r-full bg-primary" />
               <div className="flex items-center justify-between">
@@ -323,7 +323,7 @@ export default async function DashboardPage() {
             {/* Pending tasks widget */}
             <Link
               href="/todos"
-              className="group relative block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary"
+              className="group relative block rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary"
             >
               <div className="absolute left-0 top-3 bottom-3 w-0.5 rounded-r-full bg-primary" />
               <div className="flex items-center justify-between">

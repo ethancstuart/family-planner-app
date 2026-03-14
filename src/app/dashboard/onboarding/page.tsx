@@ -150,7 +150,7 @@ export default function OnboardingPage() {
     <div className="flex min-h-screen items-center justify-center px-6">
       <div className="w-full max-w-sm">
         {/* Progress dots */}
-        <div className="mb-8 flex items-center justify-center gap-2">
+        <div className="mb-10 flex items-center justify-center gap-2">
           {steps.map((s) => (
             <div
               key={s.id}
@@ -283,7 +283,7 @@ export default function OnboardingPage() {
                       duration: 0.35,
                       ease: "easeOut",
                     }}
-                    className="flex items-start gap-4 rounded-xl border border-border bg-card p-4"
+                    className="flex items-start gap-4 rounded-xl border border-border bg-card p-5"
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                       <feature.icon className="h-5 w-5 text-primary" />
