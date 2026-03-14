@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 import type { CalendarEvent, MealType } from "@/types";
 
 const mealTypeGradients: Record<MealType, string> = {
-  breakfast: "from-amber-400 to-orange-400",
-  lunch: "from-green-400 to-emerald-400",
-  dinner: "from-rose-400 to-primary",
-  snack: "from-violet-400 to-accent",
+  breakfast: "from-amber-400 to-yellow-400",
+  lunch: "from-teal-400 to-emerald-400",
+  dinner: "from-purple-400 to-violet-400",
+  snack: "from-fuchsia-400 to-pink-400",
 };
 
 interface CalendarEventCardProps {
@@ -57,8 +57,8 @@ export function CalendarEventCard({ event }: CalendarEventCardProps) {
 
   // Google Calendar event
   return (
-    <div className="relative rounded-lg border border-border bg-blue-500/5 p-2 pl-3">
-      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg bg-blue-500/50" />
+    <div className="relative rounded-lg border border-border bg-accent/5 p-2 pl-3">
+      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg bg-accent/50" />
       {!event.allDay && (
         <p className="text-[10px] text-muted-foreground">
           {formatTime(event.start)}

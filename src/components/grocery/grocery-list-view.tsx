@@ -225,7 +225,7 @@ export function GroceryListView({ list, initialItems }: GroceryListViewProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

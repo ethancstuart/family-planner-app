@@ -5,18 +5,18 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const categoryColors: Record<string, string> = {
-  "Produce": "border-l-green-500",
-  "Dairy & Eggs": "border-l-yellow-500",
-  "Meat & Seafood": "border-l-red-500",
-  "Bakery": "border-l-amber-600",
-  "Pantry": "border-l-orange-500",
-  "Frozen": "border-l-cyan-500",
+  "Produce": "border-l-emerald-500",
+  "Dairy & Eggs": "border-l-amber-500",
+  "Meat & Seafood": "border-l-rose-500",
+  "Bakery": "border-l-orange-500",
+  "Pantry": "border-l-yellow-600",
+  "Frozen": "border-l-sky-500",
   "Beverages": "border-l-blue-500",
-  "Snacks": "border-l-purple-500",
-  "Condiments & Sauces": "border-l-rose-500",
-  "Spices & Seasonings": "border-l-emerald-500",
-  "Canned Goods": "border-l-slate-500",
-  "Grains & Pasta": "border-l-yellow-600",
+  "Snacks": "border-l-violet-500",
+  "Condiments & Sauces": "border-l-fuchsia-500",
+  "Spices & Seasonings": "border-l-teal-500",
+  "Canned Goods": "border-l-slate-400",
+  "Grains & Pasta": "border-l-amber-600",
 };
 
 interface CategorySectionProps {
