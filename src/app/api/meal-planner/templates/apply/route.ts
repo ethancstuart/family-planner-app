@@ -11,6 +11,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { data: membership } = await supabase
+    .from("household_members")
+    .select("household_id")
+    .eq("user_id", user.id)
+    .limit(1)
+    .single();
+
+  if (!membership) {
+    return NextResponse.json({ error: "No household found" }, { status: 400 });
+  }
+
   try {
     const body = await request.json();
     const { templateId, targetMealPlanId } = body;
@@ -20,6 +31,30 @@ export async function POST(request: Request) {
         { error: "templateId and targetMealPlanId are required" },
         { status: 400 }
       );
+    }
+
+    // Verify template belongs to household
+    const { data: template } = await supabase
+      .from("meal_plan_templates")
+      .select("id")
+      .eq("id", templateId)
+      .eq("household_id", membership.household_id)
+      .single();
+
+    if (!template) {
+      return NextResponse.json({ error: "Template not found" }, { status: 403 });
+    }
+
+    // Verify meal plan belongs to household
+    const { data: mealPlan } = await supabase
+      .from("meal_plans")
+      .select("id")
+      .eq("id", targetMealPlanId)
+      .eq("household_id", membership.household_id)
+      .single();
+
+    if (!mealPlan) {
+      return NextResponse.json({ error: "Meal plan not found" }, { status: 403 });
     }
 
     // Fetch template slots

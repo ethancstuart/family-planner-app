@@ -132,7 +132,23 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json();
+  const { data: membership } = await supabase
+    .from("household_members")
+    .select("household_id")
+    .eq("user_id", user.id)
+    .limit(1)
+    .single();
+
+  if (!membership) {
+    return NextResponse.json({ error: "No household found" }, { status: 400 });
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
   const { templateId } = body;
 
   if (!templateId) {
@@ -145,7 +161,8 @@ export async function DELETE(request: Request) {
   const { error } = await supabase
     .from("meal_plan_templates")
     .delete()
-    .eq("id", templateId);
+    .eq("id", templateId)
+    .eq("household_id", membership.household_id);
 
   if (error) {
     return NextResponse.json(
