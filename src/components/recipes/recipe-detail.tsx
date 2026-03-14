@@ -83,7 +83,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
@@ -145,7 +145,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
       )}
 
       {/* Stats bar */}
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-border bg-muted/50 px-5 py-4 text-sm">
         {recipe.prep_time_minutes && (
           <span className="flex items-center gap-1.5 text-muted-foreground">
             <Clock className="h-4 w-4" />
@@ -205,7 +205,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
             ({recipe.ingredients.length})
           </span>
         </h2>
-        <ul className="space-y-2.5">
+        <ul className="space-y-3">
           {recipe.ingredients.map((ing, i) => (
             <li key={i} className="flex items-baseline gap-3 text-sm">
               <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
@@ -220,7 +220,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
       {/* Steps */}
       <div>
         <h2 className="mb-4 text-lg font-semibold">Instructions</h2>
-        <ol className="space-y-5">
+        <ol className="space-y-6">
           {recipe.steps.map((step, i) => (
             <li key={i} className="flex gap-4 text-sm">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">

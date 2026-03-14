@@ -66,7 +66,7 @@ export function RecipeList({ recipes }: RecipeListProps) {
   return (
     <div className="space-y-4">
       {/* Sticky search/filter bar */}
-      <div className="sticky top-14 z-10 -mx-4 bg-background/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
+      <div className="sticky top-14 z-10 -mx-4 bg-background/95 px-4 py-4 backdrop-blur-sm sm:-mx-6 sm:px-6">
         <div className="flex items-center gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -126,7 +126,7 @@ export function RecipeList({ recipes }: RecipeListProps) {
       )}
 
       <motion.div
-        className={viewMode === "grid" ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3" : "space-y-3"}
+        className={viewMode === "grid" ? "grid gap-5 sm:grid-cols-2 lg:grid-cols-3" : "space-y-3"}
         variants={staggerContainer}
         initial="hidden"
         animate="visible"

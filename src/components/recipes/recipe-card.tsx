@@ -15,12 +15,12 @@ const sourceIcons: Record<string, typeof PenLine> = {
 };
 
 const gradientColors = [
-  "from-rose-500/25 to-pink-500/10",
-  "from-violet-500/25 to-purple-500/10",
-  "from-blue-500/25 to-indigo-500/10",
-  "from-emerald-500/25 to-teal-500/10",
-  "from-orange-500/25 to-amber-500/10",
-  "from-cyan-500/25 to-sky-500/10",
+  "from-purple-500/20 to-violet-500/8",
+  "from-violet-500/20 to-indigo-500/8",
+  "from-indigo-500/20 to-blue-500/8",
+  "from-teal-500/20 to-emerald-500/8",
+  "from-fuchsia-500/20 to-pink-500/8",
+  "from-sky-500/20 to-cyan-500/8",
 ];
 
 function getGradient(recipe: Recipe) {
@@ -118,7 +118,7 @@ export function RecipeCard({ recipe, layout = "grid" }: RecipeCardProps) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5 pt-1">
+      <div className="flex flex-1 flex-col p-6 pt-2">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold leading-snug group-hover:text-primary transition-colors">
             {recipe.title}
@@ -152,7 +152,7 @@ export function RecipeCard({ recipe, layout = "grid" }: RecipeCardProps) {
           </div>
 
           {recipe.tags.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
+            <div className="mt-4 flex flex-wrap gap-1.5">
               {recipe.tags.slice(0, 3).map((tag) => (
                 <Badge key={tag} variant="glow" className="text-[10px] px-2 py-0">
                   {tag}
