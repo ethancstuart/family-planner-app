@@ -62,7 +62,8 @@ supabase/
 - Triggers: auto-create user profile on signup, auto-update updated_at on recipes
 
 ## Conventions
-- Dark theme by default (html class="dark")
+- Light theme by default (intentional override of home-base dark-first standard — this is a consumer family app)
+- Primary color: vivid purple (OKLCH hue 285) with teal accent (hue 180)
 - Mobile-first responsive design
 - TypeScript strict, never JavaScript
 - Components: PascalCase in appropriate feature folder
