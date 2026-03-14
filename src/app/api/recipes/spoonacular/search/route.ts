@@ -68,8 +68,6 @@ export async function POST(request: Request) {
   );
 
   if (!res.ok) {
-    const text = await res.text();
-    console.error("Spoonacular API error:", text);
     return NextResponse.json(
       { error: "Spoonacular API error. Check your API key." },
       { status: res.status }

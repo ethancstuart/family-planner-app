@@ -59,7 +59,6 @@ export async function POST(request: Request) {
     });
 
   if (memberError) {
-    console.error("Add member error:", memberError);
     return NextResponse.json({ error: "Failed to join household" }, { status: 500 });
   }
 
@@ -71,7 +70,7 @@ export async function POST(request: Request) {
     .is("used_by", null);
 
   if (updateError) {
-    console.error("Mark invitation used error:", updateError);
+    // Non-critical: invitation was accepted but marking it as used failed
   }
 
   return NextResponse.json({ success: true, household_id: invitation.household_id });

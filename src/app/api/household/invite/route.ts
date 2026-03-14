@@ -35,7 +35,6 @@ export async function POST() {
     .single();
 
   if (error) {
-    console.error("Create invitation error:", error);
     return NextResponse.json({ error: "Failed to create invitation" }, { status: 500 });
   }
 
@@ -80,7 +79,6 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("List invitations error:", error);
     return NextResponse.json({ error: "Failed to list invitations" }, { status: 500 });
   }
 
@@ -123,7 +121,6 @@ export async function DELETE(request: Request) {
     .eq("household_id", membership.household_id);
 
   if (error) {
-    console.error("Delete invitation error:", error);
     return NextResponse.json({ error: "Failed to revoke invitation" }, { status: 500 });
   }
 

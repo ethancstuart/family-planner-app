@@ -40,7 +40,6 @@ export async function POST(request: Request) {
     .rpc("create_household_for_user", { household_name: name });
 
   if (rpcError) {
-    console.error("Household create RPC error:", rpcError);
     return NextResponse.json({ error: rpcError.message }, { status: 500 });
   }
 
