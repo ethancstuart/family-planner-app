@@ -94,7 +94,7 @@ export const TodoItemRow = memo(function TodoItemRow({
 
         <button
           onClick={() => onDelete(item.id)}
-          className="hidden shrink-0 text-muted-foreground transition-colors hover:text-destructive group-hover:block"
+          className="shrink-0 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100 focus:opacity-100"
           aria-label="Delete task"
         >
           <X className="h-4 w-4" />

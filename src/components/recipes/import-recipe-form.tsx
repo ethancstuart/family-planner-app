@@ -188,6 +188,7 @@ export function ImportRecipeForm({ mode, onSuccess, onBack }: ImportRecipeFormPr
                 handleExtract();
               }
             }}
+            aria-describedby={error ? "import-error" : undefined}
           />
           <Button
             onClick={handleExtract}
@@ -214,7 +215,7 @@ export function ImportRecipeForm({ mode, onSuccess, onBack }: ImportRecipeFormPr
       )}
 
       {error && (
-        <p className="text-sm text-destructive">{error}</p>
+        <p id="import-error" role="alert" className="text-sm text-destructive">{error}</p>
       )}
     </div>
   );

@@ -76,7 +76,7 @@ export default async function Home() {
                 <div className="flex items-center justify-between">
                   <p className="font-semibold">Lemon Herb Chicken</p>
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-card/90 shadow-sm">
-                    <span className="text-red-500 text-xs">&#9829;</span>
+                    <span className="text-red-500 text-xs" aria-hidden="true">&#9829;</span>
                   </div>
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">Crispy skin, bright citrus glaze</p>

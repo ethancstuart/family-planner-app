@@ -63,7 +63,7 @@ export const GroceryItemRow = memo(function GroceryItemRow({
 
       <button
         onClick={() => onDelete(item.id)}
-        className="hidden shrink-0 text-muted-foreground transition-colors hover:text-destructive group-hover:block"
+        className="shrink-0 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100 focus:opacity-100"
         aria-label="Delete item"
       >
         <X className={cn(large ? "h-5 w-5" : "h-4 w-4")} />
