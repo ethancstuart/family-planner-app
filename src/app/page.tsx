@@ -38,9 +38,9 @@ export default async function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="relative mx-auto max-w-6xl px-6 pt-28 pb-16 sm:pt-36 sm:pb-24">
+      <section className="relative mx-auto max-w-6xl px-6 pt-32 pb-20 sm:pt-40 sm:pb-28">
         {/* Radial gradient background — multi-stop coral + violet */}
-        <div className="pointer-events-none absolute inset-0 -top-20 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.72_0.19_25/0.08),oklch(0.72_0.16_280/0.04),transparent)]" />
+        <div className="pointer-events-none absolute inset-0 -top-20 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.72_0.20_285/0.10),oklch(0.72_0.12_180/0.05),transparent)]" />
 
         <HeroAnimations>
           <div className="relative mx-auto max-w-2xl text-center">
@@ -71,7 +71,7 @@ export default async function Home() {
               className="overflow-hidden rounded-xl border border-border bg-card surface-elevated"
             >
               {/* Fake image area */}
-              <div className="h-40 bg-gradient-to-br from-rose-500/25 to-pink-500/10" />
+              <div className="h-40 bg-gradient-to-br from-purple-500/20 to-violet-500/8" />
               <div className="p-5">
                 <div className="flex items-center justify-between">
                   <p className="font-semibold">Lemon Herb Chicken</p>
@@ -97,7 +97,7 @@ export default async function Home() {
 
       {/* How it works — the killer feature */}
       <ScrollReveal>
-        <section className="border-y border-border bg-muted/30 py-16 sm:py-24">
+        <section className="border-y border-border bg-muted/30 py-20 sm:py-28">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -131,7 +131,7 @@ export default async function Home() {
               ].map((item, i) => (
                 <StaggerItem key={item.step} index={i}>
                   <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
                       <item.icon className="h-5 w-5" />
                     </div>
                     <div className="mb-2 text-xs font-bold uppercase tracking-widest text-primary font-mono">
@@ -151,7 +151,7 @@ export default async function Home() {
 
       {/* Import methods */}
       <ScrollReveal>
-        <section className="py-16 sm:py-24">
+        <section className="py-20 sm:py-28">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -186,7 +186,7 @@ export default async function Home() {
                 },
               ].map((item, i) => (
                 <StaggerItem key={item.title} index={i}>
-                  <div className="rounded-xl border border-border border-t-2 border-t-primary/40 bg-card p-6 transition-colors hover:border-primary">
+                  <div className="rounded-xl border border-border border-t-2 border-t-primary/40 bg-card p-7 transition-colors hover:border-primary">
                     <item.icon className="mb-3 h-6 w-6 text-primary" />
                     <h3 className="font-semibold">{item.title}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -202,7 +202,7 @@ export default async function Home() {
 
       {/* Features grid */}
       <ScrollReveal>
-        <section className="border-y border-border bg-muted/30 py-16 sm:py-24">
+        <section className="border-y border-border bg-muted/30 py-20 sm:py-28">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -239,7 +239,7 @@ export default async function Home() {
               ].map((item, i) => (
                 <StaggerItem key={item.title} index={i}>
                   <div className={`flex flex-col gap-6 sm:flex-row sm:items-center ${i % 2 !== 0 ? "sm:flex-row-reverse" : ""}`}>
-                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-primary/10 sm:h-24 sm:w-24">
+                    <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-primary/10 sm:h-28 sm:w-28">
                       <item.icon className="h-8 w-8 text-primary sm:h-10 sm:w-10" />
                     </div>
                     <div className={i % 2 !== 0 ? "sm:text-right" : ""}>
@@ -268,8 +268,8 @@ export default async function Home() {
       </ScrollReveal>
 
       {/* CTA */}
-      <section className="relative py-16 sm:py-24 overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_50%,oklch(0.72_0.19_25/0.08),oklch(0.72_0.16_280/0.04),transparent)]" />
+      <section className="relative py-20 sm:py-28 overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_50%,oklch(0.72_0.20_285/0.10),oklch(0.72_0.12_180/0.05),transparent)]" />
         <div className="relative mx-auto max-w-6xl px-6 text-center">
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Ready to organize your family&apos;s meals?
