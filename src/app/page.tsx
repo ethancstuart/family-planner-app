@@ -60,7 +60,7 @@ export default async function Home() {
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <LoginButton size="lg" />
               <span className="text-sm text-muted-foreground">
-                Free forever. No credit card.
+                Start free. No credit card.
               </span>
             </div>
           </div>
@@ -296,6 +296,20 @@ export default async function Home() {
             </a>
             . Built with Claude Code.
           </p>
+          <div className="flex items-center gap-4">
+            <a
+              href="/terms"
+              className="underline underline-offset-4 hover:text-foreground"
+            >
+              Terms of Service
+            </a>
+            <a
+              href="/privacy"
+              className="underline underline-offset-4 hover:text-foreground"
+            >
+              Privacy Policy
+            </a>
+          </div>
         </div>
       </footer>
     </div>
