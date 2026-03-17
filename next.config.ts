@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  transpilePackages: ["@family-planner/shared"],
   async headers() {
     return [
       {

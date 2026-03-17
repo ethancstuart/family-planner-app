@@ -50,7 +50,7 @@ src/
   lib/
     supabase/             # Supabase client (browser), server, middleware
     hooks/                # React hooks
-  types/                  # TypeScript interfaces
+  types/                  # Re-exports from @family-planner/shared
 supabase/
   schema.sql              # Full DB schema with RLS policies
 ```
@@ -60,6 +60,9 @@ supabase/
 - All tables have RLS enabled
 - Household scoping via user_household_ids() helper function
 - Triggers: auto-create user profile on signup, auto-update updated_at on recipes
+
+## Shared Package
+Types, constants, and utils come from `@family-planner/shared` (`file:../family-planner-shared`). Next.js transpiles it via `transpilePackages` in `next.config.ts`. The `cn()` function stays local (needs `clsx` + `tailwind-merge`). Do NOT duplicate shared code — add to the shared package instead.
 
 ## Conventions
 - Light theme by default (intentional override of home-base dark-first standard — this is a consumer family app)
