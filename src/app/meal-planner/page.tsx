@@ -99,7 +99,17 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
           hasSlots={hasAnySlots}
           hasCalendarConnection={!!calConnection}
         />
-        <p className="text-sm">Step 5: MealPlannerHeader rendered OK</p>
+
+        {!hasAnySlots && (recipes ?? []).length === 0 ? (
+          <EmptyMealPlan />
+        ) : (
+          <WeekViewLoader
+            weekStart={weekStart}
+            mealPlanId={mealPlan?.id ?? ""}
+            slots={(slots as MealPlanSlot[]) ?? []}
+            recipes={(recipes as Recipe[]) ?? []}
+          />
+        )}
       </div>
     </AppShell>
   );
