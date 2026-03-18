@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
@@ -6,6 +7,17 @@ import type { GroceryItem } from "@/types";
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: list } = await supabase
+    .from("grocery_lists")
+    .select("title")
+    .eq("id", id)
+    .single();
+  return { title: list?.title ?? "Grocery List" };
 }
 
 export default async function GroceryListPage({ params }: PageProps) {

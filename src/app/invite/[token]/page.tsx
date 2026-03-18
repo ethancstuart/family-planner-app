@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AcceptInvite } from "@/components/invite/accept-invite";
+
+export const metadata: Metadata = { title: "Join Household" };
 
 interface InvitePageProps {
   params: Promise<{ token: string }>;

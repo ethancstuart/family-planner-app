@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createApiClient } from "@/lib/supabase/from-token";
 import type { Ingredient } from "@/types";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const supabase = await createClient();
+  const supabase = await createApiClient(request);
   const {
     data: { user },
   } = await supabase.auth.getUser();

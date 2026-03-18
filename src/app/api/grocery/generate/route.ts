@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createApiClient } from "@/lib/supabase/from-token";
 import { getCategoryForIngredient } from "@/lib/constants";
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
+  const supabase = await createApiClient(request);
   const {
     data: { user },
   } = await supabase.auth.getUser();

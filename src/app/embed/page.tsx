@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   CalendarDays,
   ShoppingCart,
@@ -7,6 +8,8 @@ import {
   Clock,
   Check,
 } from "lucide-react";
+
+export const metadata: Metadata = { title: "Family Planner — Kitchen Display" };
 
 const DEMO_MEALS = [
   { day: "Mon", meal: "Chicken Tikka Masala" },
