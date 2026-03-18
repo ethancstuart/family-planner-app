@@ -62,7 +62,7 @@ supabase/
 - Triggers: auto-create user profile on signup, auto-update updated_at on recipes
 
 ## Shared Package
-Types, constants, and utils come from `@family-planner/shared` (`file:../family-planner-shared`). Next.js transpiles it via `transpilePackages` in `next.config.ts`. The `cn()` function stays local (needs `clsx` + `tailwind-merge`). Do NOT duplicate shared code — add to the shared package instead.
+Types, constants, and utils come from `@family-planner/shared` (`github:ethancstuart/family-planner-shared`). Next.js transpiles it via `transpilePackages` in `next.config.ts`. The `cn()` function stays local (needs `clsx` + `tailwind-merge`). Do NOT duplicate shared code — add to the shared package instead.
 
 ## Conventions
 - Light theme by default (intentional override of home-base dark-first standard — this is a consumer family app)
