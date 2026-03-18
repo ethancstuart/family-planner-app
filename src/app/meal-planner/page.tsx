@@ -1,6 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { AppShell } from "@/components/layout/app-shell";
+import { WeekViewLoader } from "@/components/meal-planner/week-view-loader";
+import { MealPlannerHeader } from "@/components/meal-planner/meal-planner-header";
+import { EmptyMealPlan } from "@/components/meal-planner/empty-meal-plan";
 import { getWeekStartDate, parseDate } from "@/lib/utils";
+import type { Metadata } from "next";
+import type { Recipe, MealPlanSlot } from "@/types";
+
+export const metadata: Metadata = { title: "Meal Planner" };
 
 interface PageProps {
   searchParams: Promise<{ week?: string }>;
@@ -26,7 +34,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
 
   const weekStart = params.week || getWeekStartDate();
 
-  let { data: mealPlan, error: mpError } = await supabase
+  let { data: mealPlan } = await supabase
     .from("meal_plans")
     .select("*")
     .eq("household_id", membership.household_id)
@@ -34,7 +42,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
     .single();
 
   if (!mealPlan) {
-    const { data: newPlan, error: insertError } = await supabase
+    const { data: newPlan } = await supabase
       .from("meal_plans")
       .insert({
         household_id: membership.household_id,
@@ -64,28 +72,45 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
       .order("title"),
   ]);
 
+  const slots = slotsResult.data;
+  const calConnection = calResult.data;
+  const recipes = recipesResult.data;
   const weekDate = parseDate(weekStart);
+  const hasAnySlots = (slots ?? []).length > 0;
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">Meal Planner - Diagnostic Step 3</h1>
-      <p>Data fetching test.</p>
-      <pre className="mt-4 rounded bg-gray-100 p-4 text-xs">
-        {JSON.stringify({
-          user: user?.email,
-          household: membership.household_id,
-          weekStart,
-          mealPlan: mealPlan?.id ?? "none",
-          mpError: mpError?.message,
-          slots: slotsResult.data?.length ?? 0,
-          slotsError: slotsResult.error?.message,
-          calConnection: !!calResult.data,
-          calError: calResult.error?.message,
-          recipes: recipesResult.data?.length ?? 0,
-          recipesError: recipesResult.error?.message,
-          weekDate: weekDate.toISOString(),
-        }, null, 2)}
-      </pre>
-    </div>
+    <AppShell user={user}>
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Meal Planner
+            </h1>
+            <p className="mt-1 text-muted-foreground">
+              Plan your week, one meal at a time.
+            </p>
+          </div>
+        </div>
+
+        <MealPlannerHeader
+          weekStart={weekStart}
+          currentDate={weekDate}
+          mealPlanId={mealPlan?.id ?? ""}
+          hasSlots={hasAnySlots}
+          hasCalendarConnection={!!calConnection}
+        />
+
+        {!hasAnySlots && (recipes ?? []).length === 0 ? (
+          <EmptyMealPlan />
+        ) : (
+          <WeekViewLoader
+            weekStart={weekStart}
+            mealPlanId={mealPlan?.id ?? ""}
+            slots={(slots as MealPlanSlot[]) ?? []}
+            recipes={(recipes as Recipe[]) ?? []}
+          />
+        )}
+      </div>
+    </AppShell>
   );
 }
