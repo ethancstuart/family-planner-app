@@ -33,11 +33,20 @@ export async function POST(request: Request) {
     );
   }
 
-  // Get meal plan slots with recipes
-  const { data: slots, error: slotsError } = await supabase
-    .from("meal_plan_slots")
-    .select("*, recipe:recipes(*)")
-    .eq("meal_plan_id", meal_plan_id);
+  // Get meal plan slots and pantry staples in parallel
+  const [slotsResult, staplesResult] = await Promise.all([
+    supabase
+      .from("meal_plan_slots")
+      .select("*, recipe:recipes(*)")
+      .eq("meal_plan_id", meal_plan_id),
+    supabase
+      .from("pantry_staples")
+      .select("name")
+      .eq("household_id", membership.household_id),
+  ]);
+
+  const { data: slots, error: slotsError } = slotsResult;
+  const { data: staples } = staplesResult;
 
   if (slotsError || !slots) {
     return NextResponse.json(
@@ -45,12 +54,6 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-
-  // Get pantry staples to exclude
-  const { data: staples } = await supabase
-    .from("pantry_staples")
-    .select("name")
-    .eq("household_id", membership.household_id);
 
   const stapleNames = new Set(
     (staples ?? []).map((s) => s.name.toLowerCase().trim())

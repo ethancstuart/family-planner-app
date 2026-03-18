@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
@@ -8,14 +9,19 @@ interface RecipePageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({ params }: RecipePageProps): Promise<Metadata> {
-  const { id } = await params;
+const getRecipe = cache(async (id: string) => {
   const supabase = await createClient();
-  const { data: recipe } = await supabase
+  const { data } = await supabase
     .from("recipes")
-    .select("title")
+    .select("*")
     .eq("id", id)
     .single();
+  return data;
+});
+
+export async function generateMetadata({ params }: RecipePageProps): Promise<Metadata> {
+  const { id } = await params;
+  const recipe = await getRecipe(id);
   return { title: recipe?.title ?? "Recipe" };
 }
 
@@ -28,11 +34,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
 
   if (!user) redirect("/");
 
-  const { data: recipe } = await supabase
-    .from("recipes")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const recipe = await getRecipe(id);
 
   if (!recipe) notFound();
 

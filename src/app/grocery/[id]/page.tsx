@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
@@ -9,14 +10,19 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id } = await params;
+const getGroceryList = cache(async (id: string) => {
   const supabase = await createClient();
-  const { data: list } = await supabase
+  const { data } = await supabase
     .from("grocery_lists")
-    .select("title")
+    .select("*")
     .eq("id", id)
     .single();
+  return data;
+});
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const list = await getGroceryList(id);
   return { title: list?.title ?? "Grocery List" };
 }
 
@@ -29,19 +35,16 @@ export default async function GroceryListPage({ params }: PageProps) {
 
   if (!user) redirect("/");
 
-  const { data: list } = await supabase
-    .from("grocery_lists")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const [list, { data: items }] = await Promise.all([
+    getGroceryList(id),
+    supabase
+      .from("grocery_items")
+      .select("*")
+      .eq("grocery_list_id", id)
+      .order("created_at"),
+  ]);
 
   if (!list) notFound();
-
-  const { data: items } = await supabase
-    .from("grocery_items")
-    .select("*")
-    .eq("grocery_list_id", id)
-    .order("created_at");
 
   return (
     <AppShell user={user}>

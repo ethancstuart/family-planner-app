@@ -68,60 +68,66 @@ export async function POST(request: NextRequest) {
   try {
     const { accessToken } = await getCalendarClient(user.id);
     const weekStart = parseDate(week_start_date);
-    let synced = 0;
 
-    for (const slot of slots) {
-      const recipe = slot.recipe;
-      if (!recipe) continue;
+    // Build event requests for all valid slots
+    const eventRequests = slots
+      .filter((slot) => {
+        const recipe = slot.recipe;
+        const mealConfig = mealTimes[slot.meal_type as MealType];
+        return recipe && mealConfig;
+      })
+      .map((slot) => {
+        const recipe = slot.recipe!;
+        const mealConfig = mealTimes[slot.meal_type as MealType];
 
-      const mealConfig = mealTimes[slot.meal_type as MealType];
-      if (!mealConfig) continue;
+        const eventDate = new Date(weekStart);
+        eventDate.setDate(eventDate.getDate() + slot.day_of_week);
+        eventDate.setHours(mealConfig.hour, 0, 0, 0);
 
-      const eventDate = new Date(weekStart);
-      eventDate.setDate(eventDate.getDate() + slot.day_of_week);
-      eventDate.setHours(mealConfig.hour, 0, 0, 0);
+        const endDate = new Date(eventDate);
+        endDate.setHours(endDate.getHours() + 1);
 
-      const endDate = new Date(eventDate);
-      endDate.setHours(endDate.getHours() + 1);
+        const ingredients = (recipe.ingredients ?? [])
+          .slice(0, 3)
+          .map(
+            (i: { name: string; quantity?: number | null; unit?: string | null }) =>
+              `${i.quantity ?? ""} ${i.unit ?? ""} ${i.name}`.trim()
+          )
+          .join(", ");
 
-      const ingredients = (recipe.ingredients ?? [])
-        .slice(0, 3)
-        .map(
-          (i: { name: string; quantity?: number | null; unit?: string | null }) =>
-            `${i.quantity ?? ""} ${i.unit ?? ""} ${i.name}`.trim()
-        )
-        .join(", ");
+        const description = ingredients
+          ? `Ingredients: ${ingredients}...`
+          : undefined;
 
-      const description = ingredients
-        ? `Ingredients: ${ingredients}...`
-        : undefined;
+        return fetch(
+          "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              summary: `${mealConfig.label}: ${recipe.title}`,
+              description,
+              start: { dateTime: eventDate.toISOString() },
+              end: { dateTime: endDate.toISOString() },
+            }),
+          }
+        );
+      });
 
-      const res = await fetch(
-        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            summary: `${mealConfig.label}: ${recipe.title}`,
-            description,
-            start: { dateTime: eventDate.toISOString() },
-            end: { dateTime: endDate.toISOString() },
-          }),
-        }
-      );
+    // Execute all calendar inserts in parallel
+    const results = await Promise.all(eventRequests);
 
+    for (const res of results) {
       if (!res.ok) {
         const err = await res.text();
         throw new Error(`Failed to insert event: ${err}`);
       }
-
-      synced++;
     }
 
-    return NextResponse.json({ synced });
+    return NextResponse.json({ synced: results.length });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Failed to sync meals";
