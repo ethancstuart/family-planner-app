@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
-import { WeekViewLoader } from "@/components/meal-planner/week-view-loader";
+import { WeekView } from "@/components/meal-planner/week-view";
 import { MealPlannerHeader } from "@/components/meal-planner/meal-planner-header";
 import { EmptyMealPlan } from "@/components/meal-planner/empty-meal-plan";
 import { getWeekStartDate, parseDate } from "@/lib/utils";
@@ -103,7 +103,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
         {!hasAnySlots && (recipes ?? []).length === 0 ? (
           <EmptyMealPlan />
         ) : (
-          <WeekViewLoader
+          <WeekView
             weekStart={weekStart}
             mealPlanId={mealPlan?.id ?? ""}
             slots={(slots as MealPlanSlot[]) ?? []}
