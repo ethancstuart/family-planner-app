@@ -15,108 +15,121 @@ interface PageProps {
 }
 
 export default async function MealPlannerPage({ searchParams }: PageProps) {
-  const params = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const params = await searchParams;
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) redirect("/");
+    if (!user) redirect("/");
 
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) redirect("/dashboard/onboarding");
-
-  const weekStart = params.week || getWeekStartDate();
-
-  // Get or create meal plan for this week
-  let { data: mealPlan } = await supabase
-    .from("meal_plans")
-    .select("*")
-    .eq("household_id", membership.household_id)
-    .eq("week_start_date", weekStart)
-    .single();
-
-  if (!mealPlan) {
-    const { data: newPlan, error: insertError } = await supabase
-      .from("meal_plans")
-      .insert({
-        household_id: membership.household_id,
-        week_start_date: weekStart,
-      })
-      .select()
-      .single();
-    if (insertError) {
-      console.error("[MEAL-PLANNER] Insert error:", insertError);
-    }
-    mealPlan = newPlan;
-  }
-
-  // Fetch slots, calendar connection, and recipes in parallel
-  const [slotsResult, calResult, recipesResult] = await Promise.all([
-    mealPlan
-      ? supabase
-          .from("meal_plan_slots")
-          .select("*, recipe:recipes(*)")
-          .eq("meal_plan_id", mealPlan.id)
-      : Promise.resolve({ data: [] as null[], error: null }),
-    supabase
-      .from("calendar_connections")
-      .select("id")
+    const { data: membership } = await supabase
+      .from("household_members")
+      .select("household_id")
       .eq("user_id", user.id)
-      .single(),
-    supabase
-      .from("recipes")
+      .limit(1)
+      .single();
+
+    if (!membership) redirect("/dashboard/onboarding");
+
+    const weekStart = params.week || getWeekStartDate();
+
+    // Get or create meal plan for this week
+    let { data: mealPlan } = await supabase
+      .from("meal_plans")
       .select("*")
       .eq("household_id", membership.household_id)
-      .order("title"),
-  ]);
+      .eq("week_start_date", weekStart)
+      .single();
 
-  const slots = slotsResult.data;
-  const calConnection = calResult.data;
-  const recipes = recipesResult.data;
+    if (!mealPlan) {
+      const { data: newPlan } = await supabase
+        .from("meal_plans")
+        .insert({
+          household_id: membership.household_id,
+          week_start_date: weekStart,
+        })
+        .select()
+        .single();
+      mealPlan = newPlan;
+    }
 
-  const weekDate = parseDate(weekStart);
-  const hasAnySlots = (slots ?? []).length > 0;
+    // Fetch slots, calendar connection, and recipes in parallel
+    const [slotsResult, calResult, recipesResult] = await Promise.all([
+      mealPlan
+        ? supabase
+            .from("meal_plan_slots")
+            .select("*, recipe:recipes(*)")
+            .eq("meal_plan_id", mealPlan.id)
+        : Promise.resolve({ data: [] as null[], error: null }),
+      supabase
+        .from("calendar_connections")
+        .select("id")
+        .eq("user_id", user.id)
+        .single(),
+      supabase
+        .from("recipes")
+        .select("*")
+        .eq("household_id", membership.household_id)
+        .order("title"),
+    ]);
 
-  return (
-    <AppShell user={user}>
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Meal Planner
-            </h1>
-            <p className="mt-1 text-muted-foreground">
-              Plan your week, one meal at a time.
-            </p>
+    const slots = slotsResult.data;
+    const calConnection = calResult.data;
+    const recipes = recipesResult.data;
+
+    const weekDate = parseDate(weekStart);
+    const hasAnySlots = (slots ?? []).length > 0;
+
+    return (
+      <AppShell user={user}>
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Meal Planner
+              </h1>
+              <p className="mt-1 text-muted-foreground">
+                Plan your week, one meal at a time.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <MealPlannerHeader
-          weekStart={weekStart}
-          currentDate={weekDate}
-          mealPlanId={mealPlan?.id ?? ""}
-          hasSlots={hasAnySlots}
-          hasCalendarConnection={!!calConnection}
-        />
-
-        {!hasAnySlots && (recipes ?? []).length === 0 ? (
-          <EmptyMealPlan />
-        ) : (
-          <WeekViewLoader
+          <MealPlannerHeader
             weekStart={weekStart}
+            currentDate={weekDate}
             mealPlanId={mealPlan?.id ?? ""}
-            slots={(slots as MealPlanSlot[]) ?? []}
-            recipes={(recipes as Recipe[]) ?? []}
+            hasSlots={hasAnySlots}
+            hasCalendarConnection={!!calConnection}
           />
-        )}
+
+          {!hasAnySlots && (recipes ?? []).length === 0 ? (
+            <EmptyMealPlan />
+          ) : (
+            <WeekViewLoader
+              weekStart={weekStart}
+              mealPlanId={mealPlan?.id ?? ""}
+              slots={(slots as MealPlanSlot[]) ?? []}
+              recipes={(recipes as Recipe[]) ?? []}
+            />
+          )}
+        </div>
+      </AppShell>
+    );
+  } catch (err) {
+    // Temporary: surface actual error in production to diagnose
+    const message = err instanceof Error ? err.message : String(err);
+    const stack = err instanceof Error ? err.stack : undefined;
+    return (
+      <div className="mx-auto max-w-2xl p-8">
+        <h1 className="text-xl font-bold text-red-600">Meal Planner Debug</h1>
+        <pre className="mt-4 whitespace-pre-wrap rounded bg-gray-100 p-4 text-xs">
+          {message}
+          {"\n\n"}
+          {stack}
+        </pre>
       </div>
-    </AppShell>
-  );
+    );
+  }
 }
