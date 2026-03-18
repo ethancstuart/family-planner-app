@@ -21,23 +21,25 @@ export default async function CalendarPage({ searchParams }: PageProps) {
 
   if (!user) redirect("/");
 
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
+  // Run independent queries in parallel
+  const [membershipResult, connectionResult] = await Promise.all([
+    supabase
+      .from("household_members")
+      .select("household_id")
+      .eq("user_id", user.id)
+      .limit(1)
+      .single(),
+    supabase
+      .from("calendar_connections")
+      .select("id")
+      .eq("user_id", user.id)
+      .single(),
+  ]);
 
+  const membership = membershipResult.data;
   if (!membership) redirect("/dashboard/onboarding");
 
-  // Check calendar connection
-  const { data: connection } = await supabase
-    .from("calendar_connections")
-    .select("id")
-    .eq("user_id", user.id)
-    .single();
-
-  const isConnected = !!connection;
+  const isConnected = !!connectionResult.data;
 
   const weekStart = params.week || getWeekStartDate();
 
