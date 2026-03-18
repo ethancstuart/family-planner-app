@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
-import { WeekView } from "@/components/meal-planner/week-view";
+import { WeekViewLoader } from "@/components/meal-planner/week-view-loader";
 
 export const metadata: Metadata = { title: "Meal Planner" };
 import { MealPlannerHeader } from "@/components/meal-planner/meal-planner-header";
@@ -43,7 +43,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
     .single();
 
   if (!mealPlan) {
-    const { data: newPlan } = await supabase
+    const { data: newPlan, error: insertError } = await supabase
       .from("meal_plans")
       .insert({
         household_id: membership.household_id,
@@ -51,29 +51,35 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
       })
       .select()
       .single();
+    if (insertError) {
+      console.error("[MEAL-PLANNER] Insert error:", insertError);
+    }
     mealPlan = newPlan;
   }
 
   // Fetch slots, calendar connection, and recipes in parallel
-  const [{ data: slots }, { data: calConnection }, { data: recipes }] =
-    await Promise.all([
-      mealPlan
-        ? supabase
-            .from("meal_plan_slots")
-            .select("*, recipe:recipes(*)")
-            .eq("meal_plan_id", mealPlan.id)
-        : Promise.resolve({ data: [] as null[] }),
-      supabase
-        .from("calendar_connections")
-        .select("id")
-        .eq("user_id", user.id)
-        .single(),
-      supabase
-        .from("recipes")
-        .select("*")
-        .eq("household_id", membership.household_id)
-        .order("title"),
-    ]);
+  const [slotsResult, calResult, recipesResult] = await Promise.all([
+    mealPlan
+      ? supabase
+          .from("meal_plan_slots")
+          .select("*, recipe:recipes(*)")
+          .eq("meal_plan_id", mealPlan.id)
+      : Promise.resolve({ data: [] as null[], error: null }),
+    supabase
+      .from("calendar_connections")
+      .select("id")
+      .eq("user_id", user.id)
+      .single(),
+    supabase
+      .from("recipes")
+      .select("*")
+      .eq("household_id", membership.household_id)
+      .order("title"),
+  ]);
+
+  const slots = slotsResult.data;
+  const calConnection = calResult.data;
+  const recipes = recipesResult.data;
 
   const weekDate = parseDate(weekStart);
   const hasAnySlots = (slots ?? []).length > 0;
@@ -103,7 +109,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
         {!hasAnySlots && (recipes ?? []).length === 0 ? (
           <EmptyMealPlan />
         ) : (
-          <WeekView
+          <WeekViewLoader
             weekStart={weekStart}
             mealPlanId={mealPlan?.id ?? ""}
             slots={(slots as MealPlanSlot[]) ?? []}
