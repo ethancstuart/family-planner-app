@@ -92,10 +92,14 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
           </div>
         </div>
 
-        {/* DIAGNOSTIC: components removed to test if AppShell + data works */}
-        <p className="text-sm text-muted-foreground">
-          Step 4: AppShell renders. weekStart={weekStart}, mealPlan={mealPlan?.id ?? "none"}, slots={String(hasAnySlots)}, recipes={(recipes ?? []).length}
-        </p>
+        <MealPlannerHeader
+          weekStart={weekStart}
+          currentDate={weekDate}
+          mealPlanId={mealPlan?.id ?? ""}
+          hasSlots={hasAnySlots}
+          hasCalendarConnection={!!calConnection}
+        />
+        <p className="text-sm">Step 5: MealPlannerHeader rendered OK</p>
       </div>
     </AppShell>
   );
