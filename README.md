@@ -47,6 +47,11 @@ Open [http://localhost:3000](http://localhost:3000) to get started.
 | `npm run build` | Production build |
 | `npm run lint` | ESLint |
 
+## Related Repos
+
+- [family-planner-mobile](https://github.com/ethancstuart/family-planner-mobile) — Expo/React Native iOS app
+- [family-planner-shared](https://github.com/ethancstuart/family-planner-shared) — Shared types, constants, utils
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
