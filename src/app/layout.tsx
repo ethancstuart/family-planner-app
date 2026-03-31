@@ -21,13 +21,22 @@ const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
 });
 
+import type { Viewport } from "next";
+
 export const metadata: Metadata = {
   title: {
-    default: "Family Planner — Recipes, Meals & Groceries for Your Household",
-    template: "%s | Family Planner",
+    default: "Stuart Family Planner",
+    template: "%s | Stuart Family",
   },
   description:
-    "The family hub that turns TikTok videos into recipes, recipes into meal plans, and meal plans into grocery lists. Free and open source.",
+    "Family recipes, meal plans, and grocery lists. Paste a link, get a recipe.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

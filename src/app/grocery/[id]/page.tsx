@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
-import { redirect, notFound } from "next/navigation";
+import { createFamilyClient } from "@/lib/supabase/family";
+import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { GroceryListView } from "@/components/grocery/grocery-list-view";
 import type { GroceryItem } from "@/types";
@@ -11,7 +11,7 @@ interface PageProps {
 }
 
 const getGroceryList = cache(async (id: string) => {
-  const supabase = await createClient();
+  const supabase = createFamilyClient();
   const { data } = await supabase
     .from("grocery_lists")
     .select("*")
@@ -28,12 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function GroceryListPage({ params }: PageProps) {
   const { id } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/");
+  const supabase = createFamilyClient();
 
   const [list, { data: items }] = await Promise.all([
     getGroceryList(id),
@@ -47,7 +42,7 @@ export default async function GroceryListPage({ params }: PageProps) {
   if (!list) notFound();
 
   return (
-    <AppShell user={user}>
+    <AppShell>
       <GroceryListView
         list={list}
         initialItems={(items as GroceryItem[]) ?? []}

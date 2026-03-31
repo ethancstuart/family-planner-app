@@ -42,19 +42,6 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
 
     setLoading(true);
     const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data: membership } = await supabase
-      .from("household_members")
-      .select("household_id")
-      .eq("user_id", user.id)
-      .limit(1)
-      .single();
-
-    if (!membership) return;
 
     const parsedIngredients = ingredients
       .filter((i) => i.trim())
@@ -63,7 +50,6 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
     const parsedSteps = steps.filter((s) => s.trim());
 
     const { error } = await supabase.from("recipes").insert({
-      household_id: membership.household_id,
       title: title.trim(),
       description: description.trim() || null,
       ingredients: parsedIngredients,
@@ -74,7 +60,6 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
       servings: servings ? parseInt(servings) : null,
       source_type: "manual",
       image_url: null,
-      created_by: user.id,
     });
 
     setLoading(false);
@@ -106,6 +91,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
+          className="text-base"
         />
       </div>
 
@@ -117,6 +103,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
+          className="text-base"
         />
       </div>
 
@@ -129,6 +116,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
             placeholder="15"
             value={prepTime}
             onChange={(e) => setPrepTime(e.target.value)}
+            className="text-base"
           />
         </div>
         <div className="space-y-2">
@@ -139,6 +127,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
             placeholder="30"
             value={cookTime}
             onChange={(e) => setCookTime(e.target.value)}
+            className="text-base"
           />
         </div>
         <div className="space-y-2">
@@ -149,6 +138,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
             placeholder="4"
             value={servings}
             onChange={(e) => setServings(e.target.value)}
+            className="text-base"
           />
         </div>
       </div>
@@ -167,8 +157,9 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
                 addTag();
               }
             }}
+            className="text-base"
           />
-          <Button type="button" variant="secondary" size="sm" onClick={addTag}>
+          <Button type="button" variant="secondary" size="sm" onClick={addTag} className="h-10">
             Add
           </Button>
         </div>
@@ -177,7 +168,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-0.5 text-xs"
+                className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-xs"
               >
                 {tag}
                 <button
@@ -205,6 +196,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
                 next[i] = e.target.value;
                 setIngredients(next);
               }}
+              className="text-base"
             />
             {ingredients.length > 1 && (
               <Button
@@ -225,6 +217,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
           variant="secondary"
           size="sm"
           onClick={() => setIngredients([...ingredients, ""])}
+          className="h-10"
         >
           <Plus className="mr-1 h-3.5 w-3.5" />
           Add ingredient
@@ -236,7 +229,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
         <Label>Steps</Label>
         {steps.map((step, i) => (
           <div key={i} className="flex gap-2">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border text-xs text-muted-foreground">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border text-xs text-muted-foreground">
               {i + 1}
             </span>
             <Textarea
@@ -248,6 +241,7 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
                 setSteps(next);
               }}
               rows={2}
+              className="text-base"
             />
             {steps.length > 1 && (
               <Button
@@ -266,13 +260,14 @@ export function ManualRecipeForm({ onSuccess, onBack }: ManualRecipeFormProps) {
           variant="secondary"
           size="sm"
           onClick={() => setSteps([...steps, ""])}
+          className="h-10"
         >
           <Plus className="mr-1 h-3.5 w-3.5" />
           Add step
         </Button>
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
         {loading ? "Saving..." : "Save recipe"}
       </Button>
     </form>

@@ -1,37 +1,22 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { createFamilyClient, FAMILY_HOUSEHOLD_ID } from "@/lib/supabase/family";
 import { RecipeList } from "@/components/recipes/recipe-list";
 import { AddRecipeButton } from "@/components/recipes/add-recipe-button";
 
 export const metadata: Metadata = { title: "Recipes" };
 
 export default async function RecipesPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/");
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) redirect("/dashboard/onboarding");
+  const supabase = createFamilyClient();
 
   const { data: recipes } = await supabase
     .from("recipes")
     .select("*")
-    .eq("household_id", membership.household_id)
+    .eq("household_id", FAMILY_HOUSEHOLD_ID)
     .order("created_at", { ascending: false });
 
   return (
-    <AppShell user={user}>
+    <AppShell>
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <div>

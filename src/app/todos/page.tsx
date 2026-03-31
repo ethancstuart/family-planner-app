@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
-import type { TodoList, TodoItem, User } from "@/types";
+import { createFamilyClient, FAMILY_HOUSEHOLD_ID, FAMILY_USER_ID } from "@/lib/supabase/family";
+import type { TodoList, TodoItem } from "@/types";
 
 export const metadata: Metadata = { title: "To-Dos" };
 
@@ -12,67 +11,39 @@ interface PageProps {
 
 export default async function TodosPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
 
-  if (!user) redirect("/");
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) redirect("/dashboard/onboarding");
-
-  const householdId = membership.household_id;
-
-  // Round 1: fetch lists and members in parallel (both depend only on householdId)
-  const [{ data: lists }, { data: memberData }] = await Promise.all([
-    supabase
-      .from("todo_lists")
-      .select("*")
-      .eq("household_id", householdId)
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("household_members")
-      .select("user_id")
-      .eq("household_id", householdId),
-  ]);
+  const { data: lists } = await supabase
+    .from("todo_lists")
+    .select("*")
+    .eq("household_id", householdId)
+    .order("created_at", { ascending: false });
 
   const listIds = (lists ?? []).map((l) => l.id);
-  const memberIds = (memberData ?? []).map((m) => m.user_id);
 
-  // Round 2: fetch items and profiles in parallel (depend on round 1 results)
-  const [allItems, members] = await Promise.all([
-    listIds.length > 0
-      ? supabase
-          .from("todo_items")
-          .select("*")
-          .in("todo_list_id", listIds)
-          .order("created_at")
-          .then(({ data }) => (data as TodoItem[]) ?? [])
-      : Promise.resolve([] as TodoItem[]),
-    memberIds.length > 0
-      ? supabase
-          .from("users")
-          .select("*")
-          .in("id", memberIds)
-          .then(({ data }) => (data as User[]) ?? [])
-      : Promise.resolve([] as User[]),
-  ]);
+  const allItems = listIds.length > 0
+    ? await supabase
+        .from("todo_items")
+        .select("*")
+        .in("todo_list_id", listIds)
+        .order("created_at")
+        .then(({ data }) => (data as TodoItem[]) ?? [])
+    : ([] as TodoItem[]);
+
+  // For the family version, we use a simple members list
+  const members = [
+    { id: FAMILY_USER_ID, email: "family@stuarts.local", full_name: "Family", avatar_url: null, created_at: "" },
+  ];
 
   return (
-    <AppShell user={user}>
+    <AppShell>
       <TodoPageClient
         lists={(lists as TodoList[]) ?? []}
         allItems={allItems}
         members={members}
         householdId={householdId}
-        currentUserId={user.id}
+        currentUserId={FAMILY_USER_ID}
         filter={params.filter}
       />
     </AppShell>

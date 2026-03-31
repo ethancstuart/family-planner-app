@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { createApiClient } from "@/lib/supabase/from-token";
 
 function validateUrl(raw: string): string {
   const parsed = new URL(raw);
@@ -26,43 +25,17 @@ Rules:
 - quantity should be a number or null
 - unit should be a string like "cups", "tbsp", "oz", "lbs", or null for items like "2 eggs"
 - tags should be lowercase, practical categories (dinner, lunch, snack, kids, quick, meal-prep, dessert, vegetarian, etc.)
+- For a family with young kids (toddler and baby), add "kid-friendly" tag if the recipe seems suitable for small children
 - If you can't determine a value, use null
 - steps should be clear, concise instructions
 - image_url should be the main photo URL of the recipe if available, or null
 - Do NOT include any text outside the JSON object`;
 
 export async function POST(request: Request) {
-  const supabase = await createApiClient(request);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  // Get household's Claude API key
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) {
-    return NextResponse.json({ error: "No household found" }, { status: 400 });
-  }
-
-  const { data: settings } = await supabase
-    .from("household_settings")
-    .select("claude_api_key_encrypted")
-    .eq("household_id", membership.household_id)
-    .single();
-
-  const apiKey = settings?.claude_api_key_encrypted;
+  const apiKey = process.env.CLAUDE_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "No Claude API key configured. Add one in Settings." },
+      { error: "No Claude API key configured. Add CLAUDE_API_KEY to .env.local" },
       { status: 400 }
     );
   }
@@ -204,8 +177,6 @@ function findRecipeInJsonLd(data: unknown): unknown | null {
 }
 
 async function extractFromVideo(url: string): Promise<string> {
-  // For video URLs, we pass the URL to Claude and ask it to work with
-  // whatever metadata/description is available from the page
   const validatedUrl = validateUrl(url);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);

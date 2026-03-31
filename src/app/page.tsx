@@ -1,317 +1,142 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import { LoginButton } from "@/components/layout/login-button";
-import {
-  UtensilsCrossed,
-  CalendarDays,
-  ShoppingCart,
-  ListTodo,
-  Sparkles,
-  Link2,
-  Camera,
-  Video,
-  ChefHat,
-} from "lucide-react";
-import { HeroAnimations, ScrollReveal, StaggerItem } from "@/components/landing/hero-animations";
+"use client";
 
-export default async function Home() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { ChefHat, Lock } from "lucide-react";
 
-  if (user) {
-    redirect("/dashboard");
-  }
+export default function PinLockPage() {
+  const [pin, setPin] = useState(["", "", "", ""]);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Focus first input on mount
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  const handleChange = (index: number, value: string) => {
+    // Only allow digits
+    const digit = value.replace(/\D/g, "").slice(-1);
+    const newPin = [...pin];
+    newPin[index] = digit;
+    setPin(newPin);
+    setError(false);
+
+    // Auto-advance to next input
+    if (digit && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
+
+    // Auto-submit when all 4 digits entered
+    if (digit && index === 3) {
+      const fullPin = newPin.join("");
+      if (fullPin.length === 4) {
+        submitPin(fullPin);
+      }
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !pin[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+    if (e.key === "Enter") {
+      const fullPin = pin.join("");
+      if (fullPin.length === 4) {
+        submitPin(fullPin);
+      }
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 4);
+    if (pasted.length === 4) {
+      const newPin = pasted.split("");
+      setPin(newPin);
+      submitPin(pasted);
+    }
+  };
+
+  const submitPin = async (fullPin: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin: fullPin }),
+      });
+
+      if (res.ok) {
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        setError(true);
+        setPin(["", "", "", ""]);
+        inputRefs.current[0]?.focus();
+      }
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen">
-      {/* Nav */}
-      <nav className="fixed top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <ChefHat className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold text-primary">Family Planner</span>
+    <div className="flex min-h-screen flex-col items-center justify-center px-6 bg-background">
+      {/* Subtle gradient background */}
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.72_0.20_285/0.08),transparent)]" />
+
+      <div className="relative w-full max-w-xs space-y-8 text-center">
+        {/* Logo */}
+        <div className="space-y-3">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+            <ChefHat className="h-8 w-8 text-primary" />
           </div>
-          <LoginButton variant="outline" size="sm" />
+          <h1 className="text-2xl font-bold tracking-tight">Stuart Family</h1>
+          <p className="text-sm text-muted-foreground">Enter PIN to continue</p>
         </div>
-      </nav>
 
-      {/* Hero */}
-      <section className="relative mx-auto max-w-6xl px-6 pt-32 pb-20 sm:pt-40 sm:pb-28">
-        {/* Radial gradient background — multi-stop coral + violet */}
-        <div className="pointer-events-none absolute inset-0 -top-20 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.72_0.20_285/0.10),oklch(0.72_0.12_180/0.05),transparent)]" />
-
-        <HeroAnimations>
-          <div className="relative mx-auto max-w-2xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              AI-powered recipe import
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Your family&apos;s recipes,{" "}
-              <span className="text-primary">finally organized</span>
-            </h1>
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              Paste a TikTok link and get a structured recipe in seconds. Plan
-              your week&apos;s meals, auto-generate grocery lists, and never ask
-              &ldquo;what&apos;s for dinner?&rdquo; again.
-            </p>
-            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-              <LoginButton size="lg" />
-              <span className="text-sm text-muted-foreground">
-                Start free. No credit card.
-              </span>
-            </div>
-          </div>
-
-          {/* Floating recipe card mockup */}
-          <div className="relative mx-auto mt-16 max-w-xs">
-            <div
-              className="overflow-hidden rounded-xl border border-border bg-card surface-elevated"
-            >
-              {/* Fake image area */}
-              <div className="h-40 bg-gradient-to-br from-purple-500/20 to-violet-500/8" />
-              <div className="p-5">
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold">Lemon Herb Chicken</p>
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-card/90 shadow-sm">
-                    <span className="text-red-500 text-xs" aria-hidden="true">&#9829;</span>
-                  </div>
-                </div>
-                <p className="mt-1 text-sm text-muted-foreground">Crispy skin, bright citrus glaze</p>
-                <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
-                  <span>45m</span>
-                  <span>4 servings</span>
-                  <span>8 ingredients</span>
-                </div>
-                <div className="mt-3 flex gap-1.5">
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium font-mono text-muted-foreground">dinner</span>
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium font-mono text-muted-foreground">quick</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </HeroAnimations>
-      </section>
-
-      {/* How it works — the killer feature */}
-      <ScrollReveal>
-        <section className="border-y border-border bg-muted/30 py-20 sm:py-28">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                From TikTok to dinner table in 3 steps
-              </h2>
-              <p className="mt-3 text-muted-foreground">
-                Stop screenshotting recipes you&apos;ll never find again.
-              </p>
-            </div>
-
-            <div className="mt-12 grid gap-8 sm:grid-cols-3">
-              {[
-                {
-                  step: "1",
-                  icon: Link2,
-                  title: "Paste any link",
-                  desc: "TikTok, YouTube, Instagram, recipe blogs — drop it in and our AI reads it for you.",
-                },
-                {
-                  step: "2",
-                  icon: Sparkles,
-                  title: "AI extracts the recipe",
-                  desc: "Ingredients, steps, cook time, servings — structured and ready. Review and edit before saving.",
-                },
-                {
-                  step: "3",
-                  icon: ShoppingCart,
-                  title: "Plan meals, make lists",
-                  desc: "Drag recipes onto your weekly meal plan. One click generates your grocery list.",
-                },
-              ].map((item, i) => (
-                <StaggerItem key={item.step} index={i}>
-                  <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      <item.icon className="h-5 w-5" />
-                    </div>
-                    <div className="mb-2 text-xs font-bold uppercase tracking-widest text-primary font-mono">
-                      Step {item.step}
-                    </div>
-                    <h3 className="text-lg font-semibold">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {item.desc}
-                    </p>
-                  </div>
-                </StaggerItem>
-              ))}
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
-
-      {/* Import methods */}
-      <ScrollReveal>
-        <section className="py-20 sm:py-28">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                4 ways to save a recipe
-              </h2>
-              <p className="mt-3 text-muted-foreground">
-                However you find recipes, we can capture them.
-              </p>
-            </div>
-
-            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  icon: Link2,
-                  title: "Paste a URL",
-                  desc: "AllRecipes, NYT Cooking, food blogs",
-                },
-                {
-                  icon: Video,
-                  title: "Video links",
-                  desc: "TikTok, YouTube, Instagram Reels",
-                },
-                {
-                  icon: Camera,
-                  title: "Photo or screenshot",
-                  desc: "Recipe cards, handwritten, screenshots",
-                },
-                {
-                  icon: UtensilsCrossed,
-                  title: "Type it in",
-                  desc: "Grandma's recipe from memory",
-                },
-              ].map((item, i) => (
-                <StaggerItem key={item.title} index={i}>
-                  <div className="rounded-xl border border-border border-t-2 border-t-primary/40 bg-card p-7 transition-colors hover:border-primary">
-                    <item.icon className="mb-3 h-6 w-6 text-primary" />
-                    <h3 className="font-semibold">{item.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {item.desc}
-                    </p>
-                  </div>
-                </StaggerItem>
-              ))}
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
-
-      {/* Features grid */}
-      <ScrollReveal>
-        <section className="border-y border-border bg-muted/30 py-20 sm:py-28">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                Everything your family needs
-              </h2>
-            </div>
-
-            <div className="mt-12 space-y-8">
-              {[
-                {
-                  icon: UtensilsCrossed,
-                  title: "Recipe Vault",
-                  desc: "Store every recipe your family loves. Search by ingredient, tag, or name. Favorites, categories, and source tracking.",
-                  status: "Live",
-                },
-                {
-                  icon: CalendarDays,
-                  title: "Meal Planner",
-                  desc: "Plan breakfast, lunch, dinner, and snacks for the week. Drag and drop from your vault. Template weeks for easy reuse.",
-                  status: "Live",
-                },
-                {
-                  icon: ShoppingCart,
-                  title: "Smart Grocery Lists",
-                  desc: "Auto-generate from your meal plan. Smart ingredient merging, aisle grouping, and a tap-to-check shopping mode.",
-                  status: "Live",
-                },
-                {
-                  icon: ListTodo,
-                  title: "Family To-Do",
-                  desc: "Shared task lists for chores, errands, and school stuff. Assign to family members, set due dates, and track progress.",
-                  status: "Live",
-                },
-              ].map((item, i) => (
-                <StaggerItem key={item.title} index={i}>
-                  <div className={`flex flex-col gap-6 sm:flex-row sm:items-center ${i % 2 !== 0 ? "sm:flex-row-reverse" : ""}`}>
-                    <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-primary/10 sm:h-28 sm:w-28">
-                      <item.icon className="h-8 w-8 text-primary sm:h-10 sm:w-10" />
-                    </div>
-                    <div className={i % 2 !== 0 ? "sm:text-right" : ""}>
-                      <div className={`flex items-center gap-2 ${i % 2 !== 0 ? "sm:justify-end" : ""}`}>
-                        <h3 className="text-xl font-semibold">{item.title}</h3>
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
-                            item.status === "Live"
-                              ? "bg-primary/10 text-primary"
-                              : "bg-muted text-muted-foreground"
-                          }`}
-                        >
-                          {item.status}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                        {item.desc}
-                      </p>
-                    </div>
-                  </div>
-                </StaggerItem>
-              ))}
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
-
-      {/* CTA */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_50%,oklch(0.72_0.20_285/0.10),oklch(0.72_0.12_180/0.05),transparent)]" />
-        <div className="relative mx-auto max-w-6xl px-6 text-center">
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Ready to organize your family&apos;s meals?
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            Start saving recipes in under a minute. Free, open source, no strings.
-          </p>
-          <div className="mt-8">
-            <LoginButton size="lg" />
-          </div>
+        {/* PIN inputs */}
+        <div className="flex justify-center gap-4">
+          {pin.map((digit, i) => (
+            <input
+              key={i}
+              ref={(el) => { inputRefs.current[i] = el; }}
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleChange(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(i, e)}
+              onPaste={i === 0 ? handlePaste : undefined}
+              disabled={loading}
+              className={`h-16 w-14 rounded-xl border-2 bg-card text-center text-2xl font-bold transition-all
+                focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20
+                ${error ? "border-destructive animate-shake" : "border-border"}
+                ${loading ? "opacity-50" : ""}
+              `}
+              aria-label={`PIN digit ${i + 1}`}
+            />
+          ))}
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-6 text-center text-sm text-muted-foreground">
-          <p>
-            Open source on{" "}
-            <a
-              href="https://github.com/ethancstuart/family-planner-app"
-              className="underline underline-offset-4 hover:text-foreground"
-            >
-              GitHub
-            </a>
-            . Built with Claude Code.
-          </p>
-          <div className="flex items-center gap-4">
-            <a
-              href="/terms"
-              className="underline underline-offset-4 hover:text-foreground"
-            >
-              Terms of Service
-            </a>
-            <a
-              href="/privacy"
-              className="underline underline-offset-4 hover:text-foreground"
-            >
-              Privacy Policy
-            </a>
+        {/* Error message */}
+        {error && (
+          <div className="flex items-center justify-center gap-2 text-sm text-destructive">
+            <Lock className="h-4 w-4" />
+            Wrong PIN. Try again.
           </div>
-        </div>
-      </footer>
+        )}
+
+        {/* Subtle hint */}
+        <p className="text-xs text-muted-foreground/50">
+          Family Planner
+        </p>
+      </div>
     </div>
   );
 }

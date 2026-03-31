@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { createFamilyClient, FAMILY_HOUSEHOLD_ID } from "@/lib/supabase/family";
 import { CalendarHub } from "@/components/calendar/calendar-hub";
 import { getWeekStartDate } from "@/lib/utils";
+import type { MealPlanSlot } from "@/types";
 
 export const metadata: Metadata = { title: "Calendar" };
-import type { MealPlanSlot } from "@/types";
 
 interface PageProps {
   searchParams: Promise<{ week?: string }>;
@@ -14,32 +13,8 @@ interface PageProps {
 
 export default async function CalendarPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/");
-
-  // Run independent queries in parallel
-  const [membershipResult, connectionResult] = await Promise.all([
-    supabase
-      .from("household_members")
-      .select("household_id")
-      .eq("user_id", user.id)
-      .limit(1)
-      .single(),
-    supabase
-      .from("calendar_connections")
-      .select("id")
-      .eq("user_id", user.id)
-      .single(),
-  ]);
-
-  const membership = membershipResult.data;
-  if (!membership) redirect("/dashboard/onboarding");
-
-  const isConnected = !!connectionResult.data;
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
 
   const weekStart = params.week || getWeekStartDate();
 
@@ -47,7 +22,7 @@ export default async function CalendarPage({ searchParams }: PageProps) {
   const { data: mealPlan } = await supabase
     .from("meal_plans")
     .select("*")
-    .eq("household_id", membership.household_id)
+    .eq("household_id", householdId)
     .eq("week_start_date", weekStart)
     .single();
 
@@ -59,7 +34,7 @@ export default async function CalendarPage({ searchParams }: PageProps) {
     : { data: [] };
 
   return (
-    <AppShell user={user}>
+    <AppShell>
       <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -71,7 +46,7 @@ export default async function CalendarPage({ searchParams }: PageProps) {
         </div>
 
         <CalendarHub
-          isConnected={isConnected}
+          isConnected={false}
           weekStart={weekStart}
           mealPlanSlots={(slots as MealPlanSlot[]) ?? []}
           mealPlanId={mealPlan?.id}

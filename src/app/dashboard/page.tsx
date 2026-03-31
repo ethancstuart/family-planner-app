@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { createFamilyClient, FAMILY_HOUSEHOLD_ID } from "@/lib/supabase/family";
 import Link from "next/link";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -20,30 +19,15 @@ import { getWeekStartDate } from "@/lib/utils";
 import { DAYS_OF_WEEK_SHORT } from "@/lib/constants";
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/");
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id, role")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) redirect("/dashboard/onboarding");
-
-  const householdId = membership.household_id;
-
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
   const weekStart = getWeekStartDate();
+
+  const hasApiKey = !!process.env.CLAUDE_API_KEY;
 
   // Get real counts
   const [
     recipesResult,
-    settingsResult,
     favoritesResult,
     mealPlanResult,
     groceryResult,
@@ -54,24 +38,17 @@ export default async function DashboardPage() {
       .select("id", { count: "exact", head: true })
       .eq("household_id", householdId),
     supabase
-      .from("household_settings")
-      .select("claude_api_key_encrypted")
-      .eq("household_id", householdId)
-      .single(),
-    supabase
       .from("recipes")
       .select("id, title")
       .eq("household_id", householdId)
       .eq("is_favorite", true)
       .limit(5),
-    // This week's meal plan slots
     supabase
       .from("meal_plans")
       .select("id")
       .eq("household_id", householdId)
       .eq("week_start_date", weekStart)
       .single(),
-    // Most recent grocery list
     supabase
       .from("grocery_lists")
       .select("id, title")
@@ -79,7 +56,6 @@ export default async function DashboardPage() {
       .order("created_at", { ascending: false })
       .limit(1)
       .single(),
-    // Pending todos for current user
     supabase
       .from("todo_items")
       .select("id, title, due_date, todo_list_id")
@@ -89,9 +65,7 @@ export default async function DashboardPage() {
   ]);
 
   const recipeCount = recipesResult.count ?? 0;
-  const hasApiKey = !!settingsResult.data?.claude_api_key_encrypted;
   const favorites = favoritesResult.data ?? [];
-  const firstName = user.user_metadata?.full_name?.split(" ")[0] || "there";
 
   // Fetch meal slots and grocery items in parallel
   const groceryList = groceryResult.data;
@@ -136,12 +110,12 @@ export default async function DashboardPage() {
   }
 
   return (
-    <AppShell user={user}>
+    <AppShell>
       <div className="space-y-8">
         {/* Greeting hero */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Hey, <span className="text-primary">{firstName}</span>
+            Hey, <span className="text-primary">Stuarts</span>
           </h1>
           <p className="mt-1 text-muted-foreground">
             Here&apos;s what&apos;s happening in your kitchen.
@@ -163,7 +137,7 @@ export default async function DashboardPage() {
                 done={hasApiKey}
                 href="/settings"
                 title="Add your Claude API key"
-                desc="Enables AI recipe import from URLs, videos, and photos"
+                desc="Set CLAUDE_API_KEY in .env.local for AI recipe import"
               />
               <SetupStep
                 done={recipeCount > 0}

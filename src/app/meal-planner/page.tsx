@@ -1,6 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { createFamilyClient, FAMILY_HOUSEHOLD_ID } from "@/lib/supabase/family";
 import { WeekView } from "@/components/meal-planner/week-view";
 import { MealPlannerHeader } from "@/components/meal-planner/meal-planner-header";
 import { EmptyMealPlan } from "@/components/meal-planner/empty-meal-plan";
@@ -16,28 +15,15 @@ interface PageProps {
 
 export default async function MealPlannerPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/");
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) redirect("/dashboard/onboarding");
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
 
   const weekStart = params.week || getWeekStartDate();
 
   let { data: mealPlan } = await supabase
     .from("meal_plans")
     .select("*")
-    .eq("household_id", membership.household_id)
+    .eq("household_id", householdId)
     .eq("week_start_date", weekStart)
     .single();
 
@@ -45,7 +31,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
     const { data: newPlan } = await supabase
       .from("meal_plans")
       .insert({
-        household_id: membership.household_id,
+        household_id: householdId,
         week_start_date: weekStart,
       })
       .select()
@@ -53,7 +39,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
     mealPlan = newPlan;
   }
 
-  const [slotsResult, calResult, recipesResult] = await Promise.all([
+  const [slotsResult, recipesResult] = await Promise.all([
     mealPlan
       ? supabase
           .from("meal_plan_slots")
@@ -61,25 +47,19 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
           .eq("meal_plan_id", mealPlan.id)
       : Promise.resolve({ data: [] as null[], error: null }),
     supabase
-      .from("calendar_connections")
-      .select("id")
-      .eq("user_id", user.id)
-      .single(),
-    supabase
       .from("recipes")
       .select("*")
-      .eq("household_id", membership.household_id)
+      .eq("household_id", householdId)
       .order("title"),
   ]);
 
   const slots = slotsResult.data;
-  const calConnection = calResult.data;
   const recipes = recipesResult.data;
   const weekDate = parseDate(weekStart);
   const hasAnySlots = (slots ?? []).length > 0;
 
   return (
-    <AppShell user={user}>
+    <AppShell>
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
@@ -97,7 +77,7 @@ export default async function MealPlannerPage({ searchParams }: PageProps) {
           currentDate={weekDate}
           mealPlanId={mealPlan?.id ?? ""}
           hasSlots={hasAnySlots}
-          hasCalendarConnection={!!calConnection}
+          hasCalendarConnection={false}
         />
 
         {!hasAnySlots && (recipes ?? []).length === 0 ? (

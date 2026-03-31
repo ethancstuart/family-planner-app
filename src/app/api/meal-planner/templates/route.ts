@@ -1,31 +1,14 @@
 import { NextResponse } from "next/server";
-import { createApiClient } from "@/lib/supabase/from-token";
+import { createFamilyClient, FAMILY_HOUSEHOLD_ID } from "@/lib/supabase/family";
 
-export async function GET(request: Request) {
-  const supabase = await createApiClient(request);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) {
-    return NextResponse.json({ error: "No household found" }, { status: 400 });
-  }
+export async function GET() {
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
 
   const { data: templates } = await supabase
     .from("meal_plan_templates")
     .select("*, meal_plan_template_slots(id)")
-    .eq("household_id", membership.household_id)
+    .eq("household_id", householdId)
     .order("created_at", { ascending: false });
 
   const result = (templates ?? []).map((t) => ({
@@ -39,25 +22,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const supabase = await createApiClient(request);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) {
-    return NextResponse.json({ error: "No household found" }, { status: 400 });
-  }
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
 
   let body;
   try {
@@ -91,9 +57,8 @@ export async function POST(request: Request) {
   const { data: template, error: templateError } = await supabase
     .from("meal_plan_templates")
     .insert({
-      household_id: membership.household_id,
+      household_id: householdId,
       name: name.trim(),
-      created_by: user.id,
     })
     .select()
     .single();
@@ -128,25 +93,8 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const supabase = await createApiClient(request);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) {
-    return NextResponse.json({ error: "No household found" }, { status: 400 });
-  }
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
 
   let body;
   try {
@@ -167,7 +115,7 @@ export async function DELETE(request: Request) {
     .from("meal_plan_templates")
     .delete()
     .eq("id", templateId)
-    .eq("household_id", membership.household_id);
+    .eq("household_id", householdId);
 
   if (error) {
     return NextResponse.json(

@@ -1,33 +1,19 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { createFamilyClient, FAMILY_HOUSEHOLD_ID } from "@/lib/supabase/family";
 import { GroceryListIndex } from "@/components/grocery/grocery-list-index";
 import type { GroceryList } from "@/types";
 
 export const metadata: Metadata = { title: "Grocery Lists" };
 
 export default async function GroceryPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/");
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) redirect("/dashboard/onboarding");
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
 
   const { data: lists } = await supabase
     .from("grocery_lists")
     .select("*")
-    .eq("household_id", membership.household_id)
+    .eq("household_id", householdId)
     .order("created_at", { ascending: false });
 
   // Get item counts per list
@@ -55,16 +41,16 @@ export default async function GroceryPage() {
   const { data: mealPlans } = await supabase
     .from("meal_plans")
     .select("id, week_start_date")
-    .eq("household_id", membership.household_id)
+    .eq("household_id", householdId)
     .order("week_start_date", { ascending: false })
     .limit(8);
 
   return (
-    <AppShell user={user}>
+    <AppShell>
       <GroceryListIndex
         lists={(lists as GroceryList[]) ?? []}
         itemCounts={itemCounts}
-        householdId={membership.household_id}
+        householdId={householdId}
         mealPlans={mealPlans ?? []}
       />
     </AppShell>

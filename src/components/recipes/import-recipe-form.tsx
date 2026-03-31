@@ -85,22 +85,8 @@ export function ImportRecipeForm({ mode, onSuccess, onBack }: ImportRecipeFormPr
 
   const handleSave = async (recipe: ExtractedRecipe) => {
     const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data: membership } = await supabase
-      .from("household_members")
-      .select("household_id")
-      .eq("user_id", user.id)
-      .limit(1)
-      .single();
-
-    if (!membership) return;
 
     const { error: insertError } = await supabase.from("recipes").insert({
-      household_id: membership.household_id,
       title: recipe.title,
       description: recipe.description,
       ingredients: recipe.ingredients,
@@ -112,7 +98,6 @@ export function ImportRecipeForm({ mode, onSuccess, onBack }: ImportRecipeFormPr
       source_url: recipe.source_url,
       source_type: recipe.source_type,
       image_url: recipe.image_url ?? null,
-      created_by: user.id,
     });
 
     if (insertError) {
@@ -188,12 +173,13 @@ export function ImportRecipeForm({ mode, onSuccess, onBack }: ImportRecipeFormPr
                 handleExtract();
               }
             }}
+            className="text-base"
             aria-describedby={error ? "import-error" : undefined}
           />
           <Button
             onClick={handleExtract}
             disabled={loading || !url.trim()}
-            className="w-full"
+            className="w-full h-12 text-base"
           >
             {loading ? (
               <>

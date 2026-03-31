@@ -1,26 +1,9 @@
 import { NextResponse } from "next/server";
-import { createApiClient } from "@/lib/supabase/from-token";
+import { createFamilyClient, FAMILY_HOUSEHOLD_ID } from "@/lib/supabase/family";
 
 export async function POST(request: Request) {
-  const supabase = await createApiClient(request);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) {
-    return NextResponse.json({ error: "No household found" }, { status: 400 });
-  }
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
 
   try {
     const body = await request.json();
@@ -38,23 +21,11 @@ export async function POST(request: Request) {
       .from("meal_plan_templates")
       .select("id")
       .eq("id", templateId)
-      .eq("household_id", membership.household_id)
+      .eq("household_id", householdId)
       .single();
 
     if (!template) {
       return NextResponse.json({ error: "Template not found" }, { status: 403 });
-    }
-
-    // Verify meal plan belongs to household
-    const { data: mealPlan } = await supabase
-      .from("meal_plans")
-      .select("id")
-      .eq("id", targetMealPlanId)
-      .eq("household_id", membership.household_id)
-      .single();
-
-    if (!mealPlan) {
-      return NextResponse.json({ error: "Meal plan not found" }, { status: 403 });
     }
 
     // Fetch template slots

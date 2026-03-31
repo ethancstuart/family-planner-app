@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import type { User } from "@supabase/supabase-js";
 import {
   ChefHat,
   UtensilsCrossed,
@@ -15,60 +13,38 @@ import {
   CalendarDays,
   ShoppingCart,
   ListTodo,
-  Compass,
   Calendar,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PageTransition } from "./page-transition";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/recipes", label: "Recipes", icon: UtensilsCrossed },
-  { href: "/recipes/discover", label: "Discover", icon: Compass },
   { href: "/meal-planner", label: "Meals", icon: CalendarDays },
   { href: "/grocery", label: "Grocery", icon: ShoppingCart },
   { href: "/calendar", label: "Calendar", icon: Calendar },
-  { href: "/todos", label: "To-Do", icon: ListTodo },
-];
-
-const mobileNavItems = [
-  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { href: "/recipes", label: "Recipes", icon: UtensilsCrossed },
-  { href: "/meal-planner", label: "Meals", icon: CalendarDays },
-  { href: "/calendar", label: "Calendar", icon: Calendar },
-  { href: "/grocery", label: "Grocery", icon: ShoppingCart },
   { href: "/todos", label: "To-Do", icon: ListTodo },
 ];
 
 interface AppShellProps {
-  user: User;
   children: React.ReactNode;
 }
 
-export function AppShell({ user, children }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
 
-  const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+  const handleLock = async () => {
+    await fetch("/api/auth/pin", { method: "DELETE" });
     router.push("/");
+    router.refresh();
   };
 
-  const initials =
-    user.user_metadata?.full_name
-      ?.split(" ")
-      .map((n: string) => n[0])
-      .join("")
-      .toUpperCase() ||
-    user.email?.[0]?.toUpperCase() ||
-    "?";
-
   return (
-    <div className="min-h-screen pb-16 md:pb-0">
+    <div className="min-h-screen pb-20 md:pb-0">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
@@ -82,7 +58,7 @@ export function AppShell({ user, children }: AppShellProps) {
           {/* Logo */}
           <Link href="/dashboard" className="mr-4 flex items-center gap-2">
             <ChefHat className="h-5 w-5 text-primary" />
-            <span className="font-bold text-primary">Family Planner</span>
+            <span className="font-bold text-primary">Stuart Family</span>
           </Link>
 
           {/* Nav items */}
@@ -113,7 +89,7 @@ export function AppShell({ user, children }: AppShellProps) {
             })}
           </nav>
 
-          {/* Right side: settings, theme, avatar */}
+          {/* Right side: settings, theme, lock */}
           <div className="ml-auto flex items-center gap-1">
             <Link
               href="/settings"
@@ -134,39 +110,31 @@ export function AppShell({ user, children }: AppShellProps) {
               <Sun className="h-4 w-4 dark:hidden" />
               <Moon className="hidden h-4 w-4 dark:block" />
             </Button>
-            <div className="ml-1 flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={user.user_metadata?.avatar_url} />
-                <AvatarFallback className="bg-primary/15 text-xs font-medium text-primary">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSignOut}
-                className="h-8 w-8 shrink-0"
-                aria-label="Sign out"
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLock}
+              className="h-9 w-9"
+              aria-label="Lock app"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </header>
 
-      {/* Mobile top bar */}
+      {/* Mobile/iPad top bar */}
       <header className="fixed top-0 z-50 flex h-14 w-full items-center justify-between border-b border-border bg-card/95 backdrop-blur-sm px-4 md:hidden">
         <div className="flex items-center gap-2">
           <ChefHat className="h-5 w-5 text-primary" />
-          <span className="font-bold text-primary">Family Planner</span>
+          <span className="font-bold text-primary">Stuart Family</span>
         </div>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="h-9 w-9"
+            className="h-10 w-10"
             aria-label="Toggle theme"
           >
             <Sun className="h-4 w-4 dark:hidden" />
@@ -174,7 +142,7 @@ export function AppShell({ user, children }: AppShellProps) {
           </Button>
           <Link
             href="/settings"
-            className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-muted"
+            className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-muted"
             aria-label="Settings"
           >
             <Settings className="h-4 w-4" />
@@ -182,18 +150,18 @@ export function AppShell({ user, children }: AppShellProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleSignOut}
-            className="h-9 w-9"
-            aria-label="Sign out"
+            onClick={handleLock}
+            className="h-10 w-10"
+            aria-label="Lock app"
           >
             <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </header>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 z-50 flex w-full items-center justify-around border-t border-border bg-card/95 backdrop-blur-sm md:hidden" aria-label="Mobile navigation">
-        {mobileNavItems.map((item) => {
+      {/* Mobile/iPad bottom nav — larger tap targets for iPad */}
+      <nav className="fixed bottom-0 z-50 flex w-full items-center justify-around border-t border-border bg-card/95 backdrop-blur-sm md:hidden safe-area-bottom" aria-label="Mobile navigation">
+        {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href !== "/dashboard" && pathname.startsWith(item.href));
@@ -202,11 +170,11 @@ export function AppShell({ user, children }: AppShellProps) {
               <Link
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-3.5 text-[10px] font-medium transition-colors ${
+                className={`flex flex-col items-center gap-1 py-4 text-[11px] font-medium transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="h-6 w-6" />
                 <span>{item.label}</span>
               </Link>
             </div>
@@ -214,7 +182,7 @@ export function AppShell({ user, children }: AppShellProps) {
         })}
       </nav>
 
-      {/* Main content — full width, no sidebar offset */}
+      {/* Main content */}
       <main className="pt-14" id="main-content">
         <div className="mx-auto max-w-7xl p-5 sm:p-8">
           <PageTransition key={pathname}>{children}</PageTransition>

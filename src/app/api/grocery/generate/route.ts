@@ -1,27 +1,10 @@
 import { NextResponse } from "next/server";
-import { createApiClient } from "@/lib/supabase/from-token";
+import { createFamilyClient, FAMILY_HOUSEHOLD_ID } from "@/lib/supabase/family";
 import { getCategoryForIngredient } from "@/lib/constants";
 
 export async function POST(request: Request) {
-  const supabase = await createApiClient(request);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { data: membership } = await supabase
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
-  if (!membership) {
-    return NextResponse.json({ error: "No household found" }, { status: 400 });
-  }
+  const supabase = createFamilyClient();
+  const householdId = FAMILY_HOUSEHOLD_ID;
 
   const body = await request.json();
   const { meal_plan_id } = body;
@@ -42,7 +25,7 @@ export async function POST(request: Request) {
     supabase
       .from("pantry_staples")
       .select("name")
-      .eq("household_id", membership.household_id),
+      .eq("household_id", householdId),
   ]);
 
   const { data: slots, error: slotsError } = slotsResult;
@@ -76,7 +59,6 @@ export async function POST(request: Request) {
 
       if (merged.has(key)) {
         const existing = merged.get(key)!;
-        // Sum quantities if same unit
         if (
           ing.quantity &&
           existing.unit === (ing.unit || null)
@@ -109,7 +91,7 @@ export async function POST(request: Request) {
   const { data: groceryList, error: listError } = await supabase
     .from("grocery_lists")
     .insert({
-      household_id: membership.household_id,
+      household_id: householdId,
       title: weekLabel,
       meal_plan_id,
     })
